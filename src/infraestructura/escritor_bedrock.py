@@ -9,7 +9,7 @@ import json
 import re
 from datetime import datetime
 
-from dominio.modelos import Borrador, Clima, Lugar, ZONA_ECUADOR
+from dominio.modelos import ZONA_ECUADOR, Borrador, Clima, Lugar
 from dominio.sensaciones import describir, momento_del_dia
 
 LUGARES_QUE_MENCIONA = 6
@@ -70,7 +70,8 @@ class EscritorBedrock:
         self.modelo = modelo
         self._bedrock = boto3.client("bedrock-runtime", region_name=region)
 
-    def escribir(self, lugar: Lugar, clima: Clima, tono: str, memoria, intento: int) -> Borrador:
+    def escribir(self, lugar: Lugar, clima: Clima, tono: str, memoria,
+                 intento: int) -> Borrador | None:
         respuesta = self._bedrock.converse(
             modelId=self.modelo,
             messages=[{"role": "user", "content": [
@@ -82,7 +83,7 @@ class EscritorBedrock:
         print(f"[bedrock] intento {intento} modelo={self.modelo} "
               f"tokens_in={uso.get('inputTokens')} tokens_out={uso.get('outputTokens')}")
 
-        encontrado = re.search(r"\{.*\}", texto, re.S)
+        encontrado = re.search(r"\{.*\}", texto, re.DOTALL)
         if not encontrado:
             print(f"[validacion] intento {intento}: no devolvio JSON")
             return None

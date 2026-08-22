@@ -7,7 +7,7 @@ sirve. Ninguna de las tres sabe como hacen su trabajo las otras.
 
 from datetime import datetime
 
-from dominio.modelos import Postal, ZONA_ECUADOR
+from dominio.modelos import ZONA_ECUADOR, Postal
 from dominio.seleccion import elegir_lugar, elegir_tono
 from dominio.validacion import revisar
 

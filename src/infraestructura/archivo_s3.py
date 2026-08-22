@@ -5,7 +5,7 @@ Las claves de este JSON son contrato con web/index.html: el texto sale como
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import boto3
 
@@ -35,7 +35,7 @@ class ArchivoS3:
         contenido = {
             "proyecto": "Postales del Ecuador",
             "total": len(postales),
-            "actualizado": datetime.now(timezone.utc).isoformat(),
+            "actualizado": datetime.now(UTC).isoformat(),
             "postales": [_a_json(postal) for postal in postales],
         }
         self._s3.put_object(

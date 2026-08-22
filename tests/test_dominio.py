@@ -78,7 +78,8 @@ def test_rechaza_la_provincia_en_el_titulo():
 
 
 def test_rechaza_que_el_titulo_delate_el_tono():
-    fallos = revisar(Borrador("Un aire melancolico", texto_de(100)), BANOS, "melancolico y contenido")
+    borrador = Borrador("Un aire melancolico", texto_de(100))
+    fallos = revisar(borrador, BANOS, "melancolico y contenido")
     assert any("copia el tono" in f for f in fallos)
 
 

@@ -7,6 +7,7 @@ que 'clima_json' existe ni que el texto se guarda bajo la clave 'postal'.
 import json
 
 import boto3
+from botocore.exceptions import BotoCoreError, ClientError
 
 from dominio.modelos import Clima, Postal
 
@@ -69,7 +70,7 @@ class MemoriaDynamoDB:
     def recientes(self, limite=20):
         try:
             return self._todas_ordenadas()[:limite]
-        except Exception as error:
+        except (BotoCoreError, ClientError) as error:
             print(f"[memoria] no se pudo leer el historial: {error}")
             return []
 

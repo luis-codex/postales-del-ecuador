@@ -5,7 +5,7 @@ a estos modelos en la frontera, y el dominio no sabe que existen.
 """
 
 from dataclasses import dataclass
-from datetime import timezone, timedelta
+from datetime import timedelta, timezone
 
 ZONA_ECUADOR = timezone(timedelta(hours=-5))
 
