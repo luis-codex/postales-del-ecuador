@@ -35,10 +35,19 @@
   .como{padding:30px 0; border-bottom:1px solid var(--linea); color:var(--txt2); font-size:14.5px}
   .como h2{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--txt3);
            margin:0 0 14px; font-weight:600}
-  .flujo{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:12.5px;
-         font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--txt2)}
-  .flujo span{background:var(--bg2); border:1px solid var(--linea); padding:5px 10px; border-radius:5px}
-  .flujo i{color:var(--txt3); font-style:normal}
+  .diagrama{display:block; width:100%; max-width:640px; height:auto; margin:6px auto 8px}
+  .d-edge path{fill:none; stroke:#6f777e; stroke-width:1.4}
+  .d-node rect{stroke-width:1.3}
+  .d-node .gris{fill:#16191c; stroke:#3a4249}
+  .d-node .foco{fill:#1e2226; stroke:#5a6570}
+  .d-node .oro{fill:#211c12; stroke:var(--acento)}
+  .d-node .verde{fill:#16211a; stroke:var(--verde)}
+  .d-txt text, .d-lbl text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; text-anchor:middle}
+  .d-txt .t1{font-size:12.5px; fill:#b9c0c6}
+  .d-txt .t2{font-size:11px; fill:var(--txt3)}
+  .d-txt .cverde{fill:#93c4a4} .d-txt .coro{fill:#e0b45f} .d-txt .cblanco{fill:var(--txt)}
+  .d-lbl text{font-size:10.5px; fill:var(--txt2); paint-order:stroke;
+             stroke:var(--bg); stroke-width:4px; stroke-linejoin:round}
   article{padding:44px 0; border-bottom:1px solid var(--linea)}
   .meta{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
   .chip{font-size:11.5px; padding:4px 10px; border-radius:20px; background:var(--bg2);
@@ -81,14 +90,53 @@
 
   <section class="como">
     <h2>Cómo funciona</h2>
-    <div class="flujo">
-      <span>EventBridge Scheduler</span><i>→</i>
-      <span>AWS Lambda</span><i>→</i>
-      <span>DynamoDB · memoria</span><i>→</i>
-      <span>clima real</span><i>→</i>
-      <span>Bedrock · Nova</span><i>→</i>
-      <span>S3</span>
-    </div>
+    <svg class="diagrama" viewBox="0 0 660 432" role="img"
+         aria-label="Diagrama: EventBridge Scheduler despierta a una Lambda que lee y guarda memoria en DynamoDB, consulta el clima real, escribe con Bedrock y publica en S3, que sirve la web publica.">
+      <defs>
+        <marker id="fl" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L8,4 L0,8 z" fill="#6f777e"/>
+        </marker>
+      </defs>
+      <g class="d-edge">
+        <path d="M127,72 C127,106 250,102 250,136" marker-end="url(#fl)"/>
+        <path d="M522,72 C522,106 400,102 400,136" marker-end="url(#fl)" marker-start="url(#fl)"/>
+        <path d="M252,198 C252,232 92,226 92,258" marker-end="url(#fl)"/>
+        <path d="M320,198 L320,258" marker-end="url(#fl)"/>
+        <path d="M392,198 C392,232 542,226 542,258" marker-end="url(#fl)"/>
+        <path d="M542,316 L542,361" marker-end="url(#fl)"/>
+      </g>
+      <g class="d-lbl">
+        <text x="163" y="112">despierta</text>
+        <text x="487" y="112">lee y guarda</text>
+        <text x="148" y="238">consulta</text>
+        <text x="330" y="232">escribe</text>
+        <text x="487" y="238">publica</text>
+      </g>
+      <g class="d-node">
+        <rect class="verde" x="15"  y="20"  width="225" height="52" rx="26"/>
+        <rect class="gris"  x="420" y="20"  width="205" height="52" rx="8"/>
+        <rect class="foco"  x="185" y="142" width="270" height="56" rx="8"/>
+        <rect class="gris"  x="10"  y="260" width="165" height="56" rx="8"/>
+        <rect class="oro"   x="228" y="260" width="185" height="56" rx="8"/>
+        <rect class="gris"  x="460" y="260" width="165" height="56" rx="8"/>
+        <rect class="verde" x="435" y="361" width="215" height="50" rx="25"/>
+      </g>
+      <g class="d-txt">
+        <text x="127" y="41"  class="t1 cverde">EventBridge Scheduler</text>
+        <text x="127" y="59"  class="t2 cverde">cron 06:00 · Guayaquil</text>
+        <text x="522" y="41"  class="t1">Amazon DynamoDB</text>
+        <text x="522" y="59"  class="t2">la memoria</text>
+        <text x="320" y="166" class="t1 cblanco">AWS Lambda</text>
+        <text x="320" y="184" class="t2">el agente</text>
+        <text x="92"  y="282" class="t1">Open-Meteo</text>
+        <text x="92"  y="300" class="t2">clima real</text>
+        <text x="320" y="282" class="t1 coro">Amazon Bedrock</text>
+        <text x="320" y="300" class="t2 coro">Nova Pro</text>
+        <text x="542" y="282" class="t1">Amazon S3</text>
+        <text x="542" y="300" class="t2">archivo público</text>
+        <text x="542" y="391" class="t1 cverde">Web pública · solo lectura</text>
+      </g>
+    </svg>
     <p style="margin:16px 0 0">
       La memoria importa: antes de escribir, el agente revisa dónde ya estuvo y con qué tono ya
       escribió, y elige deliberadamente algo distinto. Por eso no repite lugares ni suena igual

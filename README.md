@@ -27,21 +27,25 @@ Cada ejecución, sin intervención humana:
 
 ## Arquitectura
 
+```mermaid
+flowchart TB
+  SCH(["EventBridge Scheduler · cron 06:00"])
+  LAM["AWS Lambda — el agente"]
+  MEM[("Amazon DynamoDB<br/>la memoria")]
+  CLIMA{{"Open-Meteo<br/>clima real"}}
+  BED["Amazon Bedrock<br/>Nova Pro"]
+  ALM[("Amazon S3<br/>archivo público")]
+  WEB(["Web pública · solo lectura"])
+
+  SCH -->|despierta| LAM
+  MEM <-->|lee y guarda| LAM
+  LAM -->|consulta| CLIMA
+  LAM -->|escribe| BED
+  LAM -->|publica| ALM
+  ALM --> WEB
 ```
-  Amazon EventBridge Scheduler   (cron diario · America/Guayaquil)
-              │
-              ▼
-  AWS Lambda  "postales-del-ecuador"   (Python 3.12, sin dependencias externas)
-              │
-              ├─1─► Amazon DynamoDB  ── lee la memoria: lugares y tonos ya usados
-              ├─2─► Open-Meteo API   ── clima real del lugar elegido
-              ├─3─► Amazon Bedrock   ── amazon.nova-pro-v1:0 vía Converse API
-              ├─4─► Amazon DynamoDB  ── guarda la postal de hoy
-              └─5─► Amazon S3        ── republica data/archive.json
-                          │
-                          ▼
-              S3 Static Website Hosting
-```
+
+El agente no expone ningún endpoint de generación: la web solo lee lo que ya escribió.
 
 | Servicio | Rol |
 |---|---|
