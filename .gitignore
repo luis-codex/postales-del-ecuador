@@ -16,4 +16,4 @@ infra/backup/
 *.tfplan
 backend.hcl
 crash.log
-infra/backup
+infra/backupCHECKLIST.md
