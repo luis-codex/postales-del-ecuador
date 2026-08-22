@@ -76,7 +76,9 @@ data "archive_file" "agente" {
   type        = "zip"
   source_dir  = var.ruta_src
   output_path = var.ruta_zip
-  excludes    = ["__pycache__", "*.pyc"]
+  # Los anidados llevan **: sin eso, correr las pruebas cambia el hash del zip
+  # y Terraform cree que la Lambda cambió.
+  excludes = ["__pycache__", "**/__pycache__", "*.pyc", "**/*.pyc"]
 }
 
 resource "aws_lambda_function" "agente" {
