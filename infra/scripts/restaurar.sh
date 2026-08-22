@@ -4,7 +4,7 @@
 set -euo pipefail
 [[ $# -eq 1 ]] || { echo "uso: restaurar.sh <archivo-de-respaldo.json>"; exit 1; }
 REGION="${REGION:-us-east-1}"
-TABLA="${TABLA:-postales-historial}"
+TABLA="${TABLA:-postales-del-ecuador-historial}"
 
 python3 - "$1" "$TABLA" "$REGION" <<'PY'
 import json, subprocess, sys

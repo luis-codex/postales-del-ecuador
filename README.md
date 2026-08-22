@@ -84,7 +84,7 @@ Sin esa capa, treinta días de postales serían la misma postal treinta veces.
 src/handler.py     el agente completo
 src/lugares.py     catálogo de 50 lugares con coordenadas y "alma" del sitio
 web/index.html     la galería pública (solo lectura, sin botón de generar)
-infra/             CloudFormation en tres capas — ver infra/README.md
+infra/             AWS SAM — ver infra/README.md
 ```
 
 ## Desplegar
@@ -96,9 +96,9 @@ ni Terraform, ni CDK.
 bash infra/scripts/deploy.sh
 ```
 
-La infraestructura son cuatro plantillas de CloudFormation: un stack raíz que compone tres
-stacks anidados separados por ciclo de vida — almacenamiento, agente y programación. El
-detalle de por qué está partido así está en [infra/README.md](infra/README.md).
+La infraestructura es una plantilla de AWS SAM más un pequeño bootstrap. No hace falta SAM
+CLI: una plantilla SAM es CloudFormation con un transform que se expande en el servidor. El
+detalle está en [infra/README.md](infra/README.md).
 
 Cambiar cada cuánto escribe el agente no toca ni el código ni los datos:
 

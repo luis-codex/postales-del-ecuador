@@ -1,47 +1,76 @@
 # Infraestructura
 
-Todo el sistema es CloudFormation. No hay un solo recurso creado a mano.
+Todo el sistema es **AWS SAM** desplegado con CloudFormation. No hay un solo recurso creado
+a mano — ni siquiera el bucket de artefactos.
 
 ```
 infra/
-├── main.yaml                    stack raíz: compone las tres capas
-├── stacks/
-│   ├── almacenamiento.yaml      capa 1 · S3 + DynamoDB
-│   ├── agente.yaml              capa 2 · IAM + Lambda
-│   └── programacion.yaml        capa 3 · IAM + EventBridge Scheduler
-├── params/
-│   └── prod.json                parámetros por entorno
+├── template.yaml       SAM · toda la infraestructura (185 líneas)
+├── bootstrap.yaml      el bucket de artefactos · se despliega una vez
+├── params/prod.json    parámetros por entorno
 ├── scripts/
-│   ├── deploy.sh                empaqueta y despliega
-│   ├── frecuencia.sh            cambia cada cuánto despierta el agente
-│   ├── invocar.sh               lo despierta a mano y muestra sus logs
-│   └── evidencia.sh             lista cada vez que ha despertado y quién lo despertó
-└── backup/                      volcados de la tabla antes de migraciones
+│   ├── deploy.sh       empaqueta y despliega
+│   ├── frecuencia.sh   cambia cada cuánto despierta el agente
+│   ├── invocar.sh      lo despierta a mano y muestra sus logs
+│   ├── evidencia.sh    lista cada vez que ha despertado y quién lo despertó
+│   └── restaurar.sh    repuebla la memoria desde un respaldo
+└── backup/             volcados de la tabla antes de migraciones
 ```
 
-## Por qué tres stacks y no uno
+Los `.sh` **no crean infraestructura**. `deploy.sh` es un envoltorio de `aws cloudformation
+package` + `deploy`; los otros son herramientas de operación. Los recursos están declarados
+en las dos plantillas.
 
-La guía de buenas prácticas de CloudFormation recomienda
-[organizar los stacks por ciclo de vida y propiedad](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html).
-Aquí las tres capas cambian a ritmos muy distintos:
+## Por qué SAM y no CloudFormation crudo
 
-| Capa | Contiene | Con qué frecuencia cambia |
-|---|---|---|
-| **almacenamiento** | El bucket público y la tabla de memoria | Casi nunca. Guarda las postales ya escritas. |
-| **agente** | La Lambda y su rol | En cada despliegue de código. |
-| **programacion** | El scheduler y su rol | Cuando se ajusta el ritmo del agente. |
+Esta es una aplicación serverless, y para eso SAM existe. `AWS::Serverless::Function`
+resuelve en un bloque lo que en CloudFormation puro son cuatro recursos sueltos: la función,
+su rol de ejecución, los permisos y el scheduler que la despierta.
 
-Separarlas tiene una consecuencia práctica concreta: **cambiar cada cuánto escribe el
-agente no toca ni el código ni los datos.** Durante el fin de semana del challenge el
-scheduler corría cada pocos minutos para acumular archivo, y pasar al ritmo diario fue
-actualizar una capa sola:
+Concretamente, esto:
 
-```bash
-bash infra/scripts/frecuencia.sh "cron(0 6 * * ? *)"
+```yaml
+Events:
+  Despertador:
+    Type: ScheduleV2
+    Properties:
+      ScheduleExpression: !Ref Frecuencia
+      Input: '{"origen":"scheduler"}'
 ```
 
-Las dos capas de datos llevan `DeletionPolicy: Retain`. Borrar el stack no borra las
-postales que el agente ya escribió — eso es suyo, no del despliegue.
+sustituye a un `AWS::Scheduler::Schedule`, un `AWS::IAM::Role` para el scheduler y su
+política de invocación. Y las `Policies:` de SAM (`DynamoDBCrudPolicy`, `S3WritePolicy`)
+generan permisos acotados sin escribir el JSON de IAM a mano.
+
+**No hace falta instalar SAM CLI.** Una plantilla SAM es CloudFormation con un transform que
+se expande en el servidor; el AWS CLI la despliega con `CAPABILITY_AUTO_EXPAND`.
+
+## Una vuelta atrás que vale la pena contar
+
+La primera versión de esta carpeta tenía un stack raíz y tres stacks anidados —
+almacenamiento, agente y programación — separados por ciclo de vida, siguiendo la
+[guía de buenas prácticas de CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html).
+El argumento era correcto en abstracto y estaba mal aplicado: **son siete recursos.**
+
+Los stacks anidados cuestan tiempo de despliegue y dolor al depurar, y la regla real es
+dividir cuando duele, no antes. Se colapsó todo en una plantilla SAM y el resultado son
+menos líneas, menos indirección y capacidades que antes no estaban.
+
+## Qué trae que la versión anterior no tenía
+
+| | Por qué |
+|---|---|
+| **Retención de logs** | Por defecto CloudWatch los guarda para siempre, y se pagan para siempre. Aquí, 30 días. |
+| **IAM acotado al modelo** | Antes era `bedrock:InvokeModel` sobre `*`. Ahora sobre el ARN del modelo concreto. |
+| **Alarma de fallo + SNS** | Nadie mira los logs a las seis de la mañana. Si el agente falla, avisa. |
+| **arm64 (Graviton)** | Mismo código, ~20% más barato. |
+| **AWS X-Ray** | Trazas de cada ejecución, para ver dónde se va el tiempo. |
+| **PITR en DynamoDB** | Recuperación puntual de la memoria del agente. |
+| **Etiquetas** | Todo el stack etiquetado por proyecto y entorno. |
+| **Bootstrap declarativo** | El bucket de artefactos también es una plantilla, no dos comandos sueltos. |
+
+Las dos capas de datos llevan `DeletionPolicy: Retain`. Borrar el stack no borra las postales
+que el agente ya escribió — eso es suyo, no del despliegue.
 
 ## Cómo se despliega
 
@@ -50,38 +79,26 @@ bash infra/scripts/deploy.sh          # entorno prod por defecto
 bash infra/scripts/deploy.sh staging  # usa infra/params/staging.json
 ```
 
-El script hace tres cosas:
+Requiere AWS CLI configurado y acceso a Amazon Bedrock en la región. Nada más: ni SAM CLI,
+ni Terraform, ni CDK, ni bootstrap manual.
 
-1. Crea, si no existe, un bucket de artefactos donde CloudFormation sube el código de la
-   Lambda y las plantillas anidadas.
-2. `aws cloudformation package` — resuelve los `TemplateURL` locales y el `Code: ../../src`,
-   los sube y reescribe la plantilla con las URLs reales de S3.
-3. `aws cloudformation deploy` — crea o actualiza el stack y publica la web.
-
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en la región. Nada más: ni SAM, ni
-Terraform, ni CDK, ni bootstrap.
-
-## Parámetros
-
-`params/prod.json`:
-
-| Parámetro | Qué controla |
-|---|---|
-| `NombreBucket` | Nombre global del bucket que sirve la web |
-| `ModeloBedrock` | Modelo que escribe las postales |
-| `Frecuencia` | Expresión `cron()` o `rate()` del scheduler |
-| `ZonaHoraria` | Zona en la que se interpreta esa expresión |
-
-Para un entorno nuevo basta con copiar el JSON, cambiarle el nombre del bucket y desplegar
-con otro `STACK`:
+Cambiar el ritmo del agente no toca ni el código ni los datos:
 
 ```bash
-STACK=postales-staging bash infra/scripts/deploy.sh staging
+bash infra/scripts/frecuencia.sh "cron(0 6 * * ? *)"
 ```
 
-## Una excepción honesta
+Para enterarte si el agente se rompe, suscribe tu correo al tema de alertas:
 
-El log group `/aws/lambda/postales-del-ecuador` **no** está en las plantillas. Lo crea la
-propia Lambda y se conservó al migrar desde el despliegue inicial porque contiene el
-registro de las primeras ejecuciones autónomas del agente. Meterlo en el stack habría
-obligado a borrarlo y recrearlo, y con él esa evidencia.
+```bash
+aws sns subscribe --topic-arn "$(aws cloudformation describe-stacks \
+  --stack-name postales-del-ecuador \
+  --query "Stacks[0].Outputs[?OutputKey=='TemaAlertas'].OutputValue" --output text)" \
+  --protocol email --notification-endpoint tu@correo.com
+```
+
+## Lo que falta, dicho claro
+
+- **La web va por HTTP.** Los endpoints de sitio estático de S3 no soportan TLS. La solución
+  es CloudFront delante.
+- **El despliegue se hace desde un portátil**, no desde un pipeline.
