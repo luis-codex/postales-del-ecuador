@@ -62,6 +62,9 @@
        font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   footer{padding:44px 0 80px; color:var(--txt3); font-size:13.5px}
   footer a{color:var(--acento); text-decoration:none; border-bottom:1px solid rgba(217,164,65,.3)}
+  .enlaces{display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:15px;
+           margin:0 0 18px}
+  .enlaces span{color:var(--txt3)}
   footer a:hover{border-bottom-color:var(--acento)}
   .cargando{padding:70px 0; text-align:center; color:var(--txt3)}
   .error{padding:26px; background:rgba(200,80,80,.08); border:1px solid rgba(200,80,80,.3);
@@ -149,11 +152,19 @@
   <main id="postales"><div class="cargando">Abriendo el archivo…</div></main>
 
   <footer>
-    <p>
-      Construido para el <a href="https://builder.aws.com/content/3HkL1H9G5DVm7ZtpO8EcOt6jZsV/weekend-challenge-set-your-creative-app-free" target="_blank" rel="noopener">AWS Weekend Challenge: Set your creative app free</a>.
+    <p class="enlaces">
+      <a href="https://github.com/luis-codex/postales-del-ecuador" target="_blank" rel="noopener">
+        Código fuente en GitHub</a>
+      <span>·</span>
+      <a href="https://builder.aws.com/content/3HkL1H9G5DVm7ZtpO8EcOt6jZsV/weekend-challenge-set-your-creative-app-free" target="_blank" rel="noopener">
+        AWS Weekend Challenge</a>
     </p>
     <p>
-      Amazon Bedrock (Nova) · AWS Lambda · Amazon EventBridge Scheduler · Amazon DynamoDB ·
+      Todo el agente cabe en dos archivos de Python sin dependencias externas. El despliegue
+      completo es un script de AWS CLI.
+    </p>
+    <p>
+      Amazon Bedrock (Nova Pro) · AWS Lambda · Amazon EventBridge Scheduler · Amazon DynamoDB ·
       Amazon S3 · AWS IAM. Clima real vía Open-Meteo.
     </p>
   </footer>
