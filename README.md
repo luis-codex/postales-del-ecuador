@@ -84,26 +84,25 @@ Sin esa capa, treinta días de postales serían la misma postal treinta veces.
 src/handler.py     el agente completo
 src/lugares.py     catálogo de 50 lugares con coordenadas y "alma" del sitio
 web/index.html     la galería pública (solo lectura, sin botón de generar)
-infra/             AWS SAM — ver infra/README.md
+infra/             bash modular — ver infra/README.md
 ```
 
 ## Desplegar
 
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en `us-east-1`. Nada más: ni SAM,
-ni Terraform, ni CDK.
+Requiere AWS CLI configurado y acceso a Amazon Bedrock en `us-east-1`. Nada más.
 
 ```bash
-bash infra/scripts/deploy.sh
+bash infra/deploy.sh
 ```
 
-La infraestructura es una plantilla de AWS SAM más un pequeño bootstrap. No hace falta SAM
-CLI: una plantilla SAM es CloudFormation con un transform que se expande en el servidor. El
-detalle está en [infra/README.md](infra/README.md).
+La infraestructura es bash modular: un archivo de variables, una librería de utilidades y un
+script por capa, cargados con `source`. Es idempotente — volver a lanzarlo no duplica nada.
+El detalle está en [infra/README.md](infra/README.md).
 
 Cambiar cada cuánto escribe el agente no toca ni el código ni los datos:
 
 ```bash
-bash infra/scripts/frecuencia.sh "cron(0 6 * * ? *)"
+bash infra/frecuencia.sh "cron(0 6 * * ? *)"
 ```
 
 ## Nota sobre la parte visual

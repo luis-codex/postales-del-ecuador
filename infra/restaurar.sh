@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Restaura la memoria del agente desde un volcado de infra/backup/.
-#   bash infra/scripts/restaurar.sh infra/backup/postales-YYYYMMDD-HHMM.json
+# Repuebla la memoria del agente desde un volcado de infra/backup/.
+#   bash infra/restaurar.sh infra/backup/postales-YYYYMMDD-HHMM.json
 set -euo pipefail
-[[ $# -eq 1 ]] || { echo "uso: restaurar.sh <archivo-de-respaldo.json>"; exit 1; }
-REGION="${REGION:-us-east-1}"
-TABLA="${TABLA:-postales-del-ecuador-historial}"
+[[ $# -eq 1 ]] || { echo "uso: restaurar.sh <respaldo.json>"; exit 1; }
+
+RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$RAIZ/infra/config.sh"
 
 python3 - "$1" "$TABLA" "$REGION" <<'PY'
 import json, subprocess, sys

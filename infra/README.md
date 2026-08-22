@@ -1,108 +1,104 @@
 # Infraestructura
 
-Todo el sistema es **AWS SAM** desplegado con CloudFormation. No hay un solo recurso creado
-a mano — ni siquiera el bucket de artefactos.
+Bash modular. Un archivo de variables, una librería de utilidades, un script por capa,
+y dos orquestadores que los cargan con `source`.
 
 ```
 infra/
-├── template.yaml       SAM · toda la infraestructura (185 líneas)
-├── bootstrap.yaml      el bucket de artefactos · se despliega una vez
-├── params/prod.json    parámetros por entorno
-└── scripts/
-    ├── deploy.sh       empaqueta y despliega
-    ├── frecuencia.sh   cambia cada cuánto despierta el agente
-    └── restaurar.sh    repuebla la memoria desde un respaldo
+├── config.sh              todas las variables, y solo aquí
+├── lib.sh                 utilidades: paso(), existe(), reintentar()
+├── 10-almacenamiento.sh   bucket + tabla
+├── 20-agente.sh           rol + logs + lambda + alarma
+├── 30-programacion.sh     rol + scheduler
+├── deploy.sh              orquesta el despliegue
+├── destroy.sh             orquesta el desmontaje
+├── frecuencia.sh          cambia el ritmo del agente
+└── restaurar.sh           repuebla la memoria desde un respaldo
 ```
 
-Los `.sh` **no crean infraestructura**. `deploy.sh` es un envoltorio de `aws cloudformation
-package` + `deploy`; los otros dos son herramientas de operación. Los recursos están
-declarados en las dos plantillas.
+## Cómo se usa
 
-Hubo un tercer y un cuarto script, `invocar.sh` y `evidencia.sh`. Cada uno envolvía un solo
-comando de AWS, así que no eran scripts: eran alias con ínfulas. Los comandos están más
-abajo, que es donde tenían que estar.
-
-## Por qué SAM y no CloudFormation crudo
-
-Esta es una aplicación serverless, y para eso SAM existe. `AWS::Serverless::Function`
-resuelve en un bloque lo que en CloudFormation puro son cuatro recursos sueltos: la función,
-su rol de ejecución, los permisos y el scheduler que la despierta.
-
-Concretamente, esto:
-
-```yaml
-Events:
-  Despertador:
-    Type: ScheduleV2
-    Properties:
-      ScheduleExpression: !Ref Frecuencia
-      Input: '{"origen":"scheduler"}'
+```bash
+bash infra/deploy.sh                            # crea o actualiza todo
+FRECUENCIA="rate(5 minutes)" bash infra/deploy.sh   # con otra frecuencia
+bash infra/frecuencia.sh "cron(0 6 * * ? *)"    # solo el reloj
+bash infra/destroy.sh                           # avisa y no hace nada
+bash infra/destroy.sh --si                      # desmonta de verdad
 ```
 
-sustituye a un `AWS::Scheduler::Schedule`, un `AWS::IAM::Role` para el scheduler y su
-política de invocación. Y las `Policies:` de SAM (`DynamoDBCrudPolicy`, `S3WritePolicy`)
-generan permisos acotados sin escribir el JSON de IAM a mano.
+Requiere AWS CLI configurado y acceso a Amazon Bedrock en la región. Nada más.
 
-**No hace falta instalar SAM CLI.** Una plantilla SAM es CloudFormation con un transform que
-se expande en el servidor; el AWS CLI la despliega con `CAPABILITY_AUTO_EXPAND`.
+## Cómo está montado
 
-## Una vuelta atrás que vale la pena contar
+Cada capa expone dos funciones con el mismo patrón:
 
-La primera versión de esta carpeta tenía un stack raíz y tres stacks anidados —
-almacenamiento, agente y programación — separados por ciclo de vida, siguiendo la
-[guía de buenas prácticas de CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html).
-El argumento era correcto en abstracto y estaba mal aplicado: **son siete recursos.**
+```bash
+almacenamiento::desplegar()
+almacenamiento::destruir()
+```
 
-Los stacks anidados cuestan tiempo de despliegue y dolor al depurar, y la regla real es
-dividir cuando duele, no antes. Se colapsó todo en una plantilla SAM y el resultado son
-menos líneas, menos indirección y capacidades que antes no estaban.
+`deploy.sh` las llama en orden; `destroy.sh` en orden inverso, para que lo que depende de
+algo se borre antes que aquello de lo que depende. Los scripts de capa no se ejecutan
+sueltos: se cargan con `source` y solo definen funciones.
 
-## Qué trae que la versión anterior no tenía
+Todo lo configurable vive en `config.sh` y en ningún otro sitio. Cualquier variable se puede
+sobreescribir desde el entorno sin editar nada:
 
-| | Por qué |
+```bash
+BUCKET=otro-bucket REGION=us-west-2 bash infra/deploy.sh
+```
+
+## Es idempotente
+
+Volver a ejecutar `deploy.sh` no duplica nada. Cada recurso se comprueba antes de crearse,
+con un helper que hace legible el patrón:
+
+```bash
+if existe aws dynamodb describe-table --table-name "$TABLA" --region "$REGION"; then
+  salta "tabla $TABLA ya existe"
+else
+  ...
+fi
+```
+
+La segunda pasada no crea nada: solo reaplica lo que es barato reaplicar — políticas,
+retención, configuración del bucket — y actualiza el código de la Lambda.
+
+## Qué hay que saber si vienes de una herramienta declarativa
+
+Esto se escribió primero con CloudFormation y luego con SAM antes de acabar en bash. Las
+diferencias que se notan al vivir con ello:
+
+| | Aquí |
 |---|---|
-| **Retención de logs** | Por defecto CloudWatch los guarda para siempre, y se pagan para siempre. Aquí, 30 días. |
-| **IAM acotado al modelo** | Antes era `bedrock:InvokeModel` sobre `*`. Ahora sobre el ARN del modelo concreto. |
-| **Alarma de fallo + SNS** | Nadie mira los logs a las seis de la mañana. Si el agente falla, avisa. |
-| **arm64 (Graviton)** | Mismo código, ~20% más barato. |
-| **AWS X-Ray** | Trazas de cada ejecución, para ver dónde se va el tiempo. |
-| **PITR en DynamoDB** | Recuperación puntual de la memoria del agente. |
-| **Etiquetas** | Todo el stack etiquetado por proyecto y entorno. |
-| **Bootstrap declarativo** | El bucket de artefactos también es una plantilla, no dos comandos sueltos. |
+| **`destroy.sh` existe** | Un script sabe crear, no sabe destruir. El orden de borrado se mantiene a mano y hay que actualizarlo cada vez que se añade un recurso. Es el precio principal. |
+| **La idempotencia se escribe** | El helper `existe()` es la respuesta a "¿esto ya está?", repetida por recurso. Una herramienta declarativa no cobra por esa pregunta. |
+| **Sin rollback** | Si falla a la mitad, queda a medias. Por eso cada paso es idempotente: la recuperación es volver a lanzarlo. |
+| **Quitar un recurso no lo borra** | Si borras un recurso del script, sigue vivo en AWS cobrando. Nadie avisa. |
+| **La propagación de IAM se maneja a mano** | Un rol recién creado tarda segundos en ser usable. De ahí `reintentar 6 10 aws lambda create-function`. |
+| **Las etiquetas, en tres formatos** | El AWS CLI las pide como mapa, como lista o como JSON según el servicio. Los tres están declarados juntos en `config.sh`. |
 
-Las dos capas de datos llevan `DeletionPolicy: Retain`. Borrar el stack no borra las postales
-que el agente ya escribió — eso es suyo, no del despliegue.
+A cambio: todo está en un lenguaje que ya sabes leer, sin transform, sin estado y sin
+ninguna capa entre lo que escribes y la llamada a la API.
 
-## Cómo se despliega
+## Qué trae
 
-```bash
-bash infra/scripts/deploy.sh          # entorno prod por defecto
-bash infra/scripts/deploy.sh staging  # usa infra/params/staging.json
-```
+| | |
+|---|---|
+| Retención de logs | 30 días. Por defecto CloudWatch los guarda —y cobra— para siempre. |
+| IAM acotado | `bedrock:InvokeModel` sobre el ARN del modelo concreto, nunca sobre `*`. |
+| Alarma + SNS | Nadie mira los logs a las seis de la mañana. Si el agente falla, avisa. |
+| arm64 (Graviton) | Mismo código, ~20% más barato. |
+| AWS X-Ray | Trazas de cada ejecución. |
+| PITR en DynamoDB | Recuperación puntual de la memoria del agente. |
+| Etiquetas | Todos los recursos por proyecto y entorno. |
 
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en la región. Nada más: ni SAM CLI,
-ni Terraform, ni CDK, ni bootstrap manual.
-
-Cambiar el ritmo del agente no toca ni el código ni los datos:
-
-```bash
-bash infra/scripts/frecuencia.sh "cron(0 6 * * ? *)"
-```
-
-Para enterarte si el agente se rompe, suscribe tu correo al tema de alertas:
+Para enterarte si el agente se rompe, suscribe tu correo:
 
 ```bash
-aws sns subscribe --topic-arn "$(aws cloudformation describe-stacks \
-  --stack-name postales-del-ecuador \
-  --query "Stacks[0].Outputs[?OutputKey=='TemaAlertas'].OutputValue" --output text)" \
+aws sns subscribe --topic-arn "arn:aws:sns:us-east-1:<cuenta>:postales-del-ecuador-alertas" \
   --protocol email --notification-endpoint tu@correo.com
 ```
-
-## Lo que falta, dicho claro
-
-- **La web va por HTTP.** Los endpoints de sitio estático de S3 no soportan TLS. La solución
-  es CloudFront delante.
-- **El despliegue se hace desde un portátil**, no desde un pipeline.
 
 ## Operar el agente a mano
 
@@ -122,3 +118,9 @@ aws logs filter-log-events \
   --filter-pattern '"[agente] despierta"' \
   --query 'events[].message' --output text | tr '\t' '\n'
 ```
+
+## Lo que falta, dicho claro
+
+- **La web va por HTTP.** Los endpoints de sitio estático de S3 no soportan TLS. La solución
+  es CloudFront delante.
+- **El despliegue se hace desde un portátil**, no desde un pipeline.

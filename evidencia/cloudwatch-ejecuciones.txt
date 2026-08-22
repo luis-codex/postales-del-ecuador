@@ -268,3 +268,30 @@ Billed Duration: 3279 ms
 Memory Size: 512 MB
 Max Memory Used: 104 MB
 Init Duration: 547.59 ms
+
+======================================================================
+Bloque 2 - tras migrar la infraestructura (log group recreado)
+Exportado: 2026-08-22T13:36:36-05:00
+======================================================================
+INIT_START Runtime Version: python:3.12.mainlinev2.v27
+Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:6bd9bb5ef92b1d497f0d321ae5cc98e2a8cdebca38437fb77b21c1fab1eb17cb
+START RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43 Version: $LATEST
+[agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T12:04:43.651293-05:00
+[memoria] 15 postales previas en el historial
+[decision] lugar=Vilcabamba tono=inquieto, con algo de presagio
+[clima] Vilcabamba: 28.8C, mayormente despejado, humedad 34%, viento 15.6km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=647 tokens_out=213
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T12-04-43 guardada
+[s3] archivo republicado con 16 postales
+[agente] listo. 'Sombras buscadas en la quietud' desde Vilcabamba. archivo: 16 postales
+END RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43
+REPORT RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43
+Duration: 2906.26 ms
+Billed Duration: 3462 ms
+Memory Size: 512 MB
+Max Memory Used: 105 MB
+Init Duration: 554.74 ms
+XRAY TraceId: 1-6a89d6aa-60bad44e6abbd3b569bf4383
+SegmentId: ca8818456d5087a7
+Sampled: true
