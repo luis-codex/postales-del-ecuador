@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+infra/.env
+PLAN.md
+CHALLENGE-BRIEF.md
+evidencia/
