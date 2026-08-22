@@ -168,8 +168,8 @@
         AWS Weekend Challenge</a>
     </p>
     <p>
-      Todo el agente cabe en dos archivos de Python sin dependencias externas. La
-      infraestructura es Terraform: módulos y un entorno, con el estado remoto en S3.
+      El agente no tiene dependencias externas y está separado en capas: las reglas que
+      deciden la calidad no saben que AWS existe. La infraestructura es Terraform.
     </p>
     <p>
       Amazon Bedrock (Nova Pro) · AWS Lambda · Amazon EventBridge Scheduler · Amazon DynamoDB ·
