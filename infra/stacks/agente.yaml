@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Capa del agente: la Lambda que lee su memoria, consulta el clima real,
+  escribe la postal y republica el archivo, con su rol de permisos minimos.
+
+Parameters:
+  NombreTabla:
+    Type: String
+  ArnTabla:
+    Type: String
+  NombreBucket:
+    Type: String
+  ArnBucket:
+    Type: String
+  ModeloBedrock:
+    Type: String
+
+Resources:
+
+  AgenteRol:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: postales-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: postales-permisos
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !Ref ArnTabla
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "${ArnBucket}/*"
+
+  AgenteFuncion:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: postales-del-ecuador
+      Description: Escribe una postal desde un lugar del Ecuador segun su clima real.
+      Runtime: python3.12
+      Handler: handler.lambda_handler
+      Role: !GetAtt AgenteRol.Arn
+      Timeout: 120
+      MemorySize: 512
+      Code: ../../src
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref NombreTabla
+          BUCKET_NAME: !Ref NombreBucket
+          MODEL_ID: !Ref ModeloBedrock
+
+Outputs:
+  NombreFuncion:
+    Value: !Ref AgenteFuncion
+  ArnFuncion:
+    Value: !GetAtt AgenteFuncion.Arn

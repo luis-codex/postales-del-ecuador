@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Postales del Ecuador - stack raiz. Compone tres stacks anidados separados por
+  ciclo de vida: el almacenamiento casi nunca cambia, el agente cambia en cada
+  despliegue, y la programacion cambia cuando se ajusta cada cuanto despierta.
+
+Parameters:
+
+  NombreBucket:
+    Type: String
+    Description: Nombre global del bucket que sirve la web publica.
+    AllowedPattern: "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+
+  ModeloBedrock:
+    Type: String
+    Default: amazon.nova-pro-v1:0
+    Description: Modelo de Amazon Bedrock que escribe las postales.
+
+  Frecuencia:
+    Type: String
+    Default: cron(0 6 * * ? *)
+    Description: Cada cuanto despierta el agente.
+
+  ZonaHoraria:
+    Type: String
+    Default: America/Guayaquil
+    Description: Zona horaria de la expresion de frecuencia.
+
+Resources:
+
+  # Capa 1 - los datos y el sitio. Ciclo de vida: el mas largo de todos.
+  Almacenamiento:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./stacks/almacenamiento.yaml
+      Parameters:
+        NombreBucket: !Ref NombreBucket
+
+  # Capa 2 - el codigo del agente. Ciclo de vida: cambia en cada despliegue.
+  Agente:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./stacks/agente.yaml
+      Parameters:
+        NombreTabla: !GetAtt Almacenamiento.Outputs.NombreTabla
+        ArnTabla: !GetAtt Almacenamiento.Outputs.ArnTabla
+        NombreBucket: !GetAtt Almacenamiento.Outputs.NombreBucket
+        ArnBucket: !GetAtt Almacenamiento.Outputs.ArnBucket
+        ModeloBedrock: !Ref ModeloBedrock
+
+  # Capa 3 - cuando despierta. Ciclo de vida: se ajusta sin tocar el codigo.
+  Programacion:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./stacks/programacion.yaml
+      Parameters:
+        ArnFuncion: !GetAtt Agente.Outputs.ArnFuncion
+        Frecuencia: !Ref Frecuencia
+        ZonaHoraria: !Ref ZonaHoraria
+
+Outputs:
+
+  WebPublica:
+    Description: La galeria publica de postales.
+    Value: !GetAtt Almacenamiento.Outputs.WebPublica
+
+  Bucket:
+    Description: Bucket que almacena las postales y sirve la web.
+    Value: !GetAtt Almacenamiento.Outputs.NombreBucket
+
+  Funcion:
+    Description: La Lambda que contiene al agente.
+    Value: !GetAtt Agente.Outputs.NombreFuncion
+
+  Tabla:
+    Description: La memoria del agente.
+    Value: !GetAtt Almacenamiento.Outputs.NombreTabla

@@ -6,7 +6,7 @@ postal literaria. Nadie se lo pide: lo despierta un scheduler.
 
 > **La mejor herramienta es la que nunca tienes que abrir.**
 
-🌐 **Web en vivo:** http://postales-del-ecuador-9b576d68.s3-website-us-east-1.amazonaws.com
+🌐 **Web en vivo:** http://postales-del-ecuador-ec.s3-website-us-east-1.amazonaws.com
 
 Construido para el [AWS Weekend Challenge: Set your creative app free](https://builder.aws.com/content/3HkL1H9G5DVm7ZtpO8EcOt6jZsV/weekend-challenge-set-your-creative-app-free).
 
@@ -84,25 +84,26 @@ Sin esa capa, treinta días de postales serían la misma postal treinta veces.
 src/handler.py     el agente completo
 src/lugares.py     catálogo de 50 lugares con coordenadas y "alma" del sitio
 web/index.html     la galería pública (solo lectura, sin botón de generar)
-infra/deploy.sh    despliegue completo con AWS CLI, idempotente
+infra/             CloudFormation en tres capas — ver infra/README.md
 ```
 
 ## Desplegar
 
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en `us-east-1`.
+Requiere AWS CLI configurado y acceso a Amazon Bedrock en `us-east-1`. Nada más: ni SAM,
+ni Terraform, ni CDK.
 
 ```bash
-bash infra/deploy.sh
+bash infra/scripts/deploy.sh
 ```
 
-Crea el rol IAM, la tabla DynamoDB, el bucket S3 con web estática, la función Lambda
-y el EventBridge Scheduler. Es idempotente: se puede volver a ejecutar para actualizar
-el código.
+La infraestructura son cuatro plantillas de CloudFormation: un stack raíz que compone tres
+stacks anidados separados por ciclo de vida — almacenamiento, agente y programación. El
+detalle de por qué está partido así está en [infra/README.md](infra/README.md).
 
-Para cambiar la frecuencia:
+Cambiar cada cuánto escribe el agente no toca ni el código ni los datos:
 
 ```bash
-FRECUENCIA="cron(0 6 * * ? *)" bash infra/deploy.sh
+bash infra/scripts/frecuencia.sh "cron(0 6 * * ? *)"
 ```
 
 ## Nota sobre la parte visual

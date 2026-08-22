@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Capa de programacion: el reloj que despierta al agente. Vive en su propio
+  stack para poder cambiar la frecuencia sin volver a desplegar el codigo.
+
+Parameters:
+  ArnFuncion:
+    Type: String
+  Frecuencia:
+    Type: String
+  ZonaHoraria:
+    Type: String
+
+Resources:
+
+  DespertadorRol:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: postales-scheduler-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: scheduler.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+      Policies:
+        - PolicyName: invocar-postales
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !Ref ArnFuncion
+
+  Despertador:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: postales-diarias
+      Description: Despierta al agente Postales del Ecuador.
+      State: ENABLED
+      ScheduleExpression: !Ref Frecuencia
+      ScheduleExpressionTimezone: !Ref ZonaHoraria
+      FlexibleTimeWindow:
+        Mode: "OFF"
+      Target:
+        Arn: !Ref ArnFuncion
+        RoleArn: !GetAtt DespertadorRol.Arn
+        Input: '{"origen":"scheduler"}'
+
+Outputs:
+  NombreProgramacion:
+    Value: !Ref Despertador

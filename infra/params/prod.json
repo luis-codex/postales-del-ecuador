@@ -1,0 +1,6 @@
+{
+  "NombreBucket": "postales-del-ecuador-ec",
+  "ModeloBedrock": "amazon.nova-pro-v1:0",
+  "Frecuencia": "cron(0 6 * * ? *)",
+  "ZonaHoraria": "America/Guayaquil"
+}
