@@ -84,25 +84,27 @@ Sin esa capa, treinta días de postales serían la misma postal treinta veces.
 src/handler.py     el agente completo
 src/lugares.py     catálogo de 50 lugares con coordenadas y "alma" del sitio
 web/index.html     la galería pública (solo lectura, sin botón de generar)
-infra/             bash modular — ver infra/README.md
+infra/             Terraform — ver infra/README.md
 ```
 
 ## Desplegar
 
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en `us-east-1`. Nada más.
+Requiere Terraform y AWS CLI configurado, con acceso a Amazon Bedrock en `us-east-1`.
 
 ```bash
-bash infra/deploy.sh
+cd infra/environments/prod
+terraform init -backend-config=backend.hcl
+terraform apply
 ```
 
-La infraestructura es bash modular: un archivo de variables, una librería de utilidades y un
-script por capa, cargados con `source`. Es idempotente — volver a lanzarlo no duplica nada.
-El detalle está en [infra/README.md](infra/README.md).
+La infraestructura es Terraform: módulos reutilizables en `infra/modules/` y un entorno que
+los compone en `infra/environments/prod/`, con el state remoto en S3. El detalle está en
+[infra/README.md](infra/README.md).
 
 Cambiar cada cuánto escribe el agente no toca ni el código ni los datos:
 
 ```bash
-bash infra/frecuencia.sh "cron(0 6 * * ? *)"
+terraform apply -var 'frecuencia=rate(5 minutes)'
 ```
 
 ## Nota sobre la parte visual

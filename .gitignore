@@ -7,3 +7,12 @@ CHALLENGE-BRIEF.md
 ARTICULO.md
 infra/.empaquetado.yaml
 infra/backup/
+
+# terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+backend.hcl
+crash.log

@@ -1,85 +1,98 @@
 # Infraestructura
 
-Bash modular. Un archivo de variables, una librería de utilidades, un script por capa,
-y dos orquestadores que los cargan con `source`.
+Terraform. Módulos reutilizables en `modules/`, y un entorno que los compone en
+`environments/prod/`.
 
 ```
 infra/
-├── config.sh              todas las variables, y solo aquí
-├── lib.sh                 utilidades: paso(), existe(), reintentar()
-├── 10-almacenamiento.sh   bucket + tabla
-├── 20-agente.sh           rol + logs + lambda + alarma
-├── 30-programacion.sh     rol + scheduler
-├── deploy.sh              orquesta el despliegue
-├── destroy.sh             orquesta el desmontaje
-├── frecuencia.sh          cambia el ritmo del agente
-└── restaurar.sh           repuebla la memoria desde un respaldo
+├── bootstrap/                  crea el bucket del state · se aplica una vez
+│   └── main.tf
+├── modules/
+│   ├── almacenamiento/         S3 + DynamoDB
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── agente/                 IAM + logs + Lambda + SNS + alarma
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── programacion/           IAM + EventBridge Scheduler
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+└── environments/
+    └── prod/
+        ├── main.tf             une los módulos conectando sus salidas
+        ├── providers.tf        provider AWS y etiquetas por defecto
+        ├── backend.tf          state remoto
+        ├── variables.tf
+        ├── outputs.tf
+        ├── terraform.tfvars    valores de este entorno
+        └── backend.hcl.ejemplo
 ```
 
-## Cómo se usa
+Los módulos no saben dónde están colocados en el repositorio: las rutas al código y al HTML
+se calculan en `environments/prod/main.tf` desde `path.root` y se pasan como variables.
+
+## Primera vez
+
+El state vive en S3, pero ese bucket hay que crearlo con algo. Es el huevo y la gallina de
+cualquier IaC, y se resuelve con un módulo aparte que usa state **local** y se aplica una
+sola vez:
 
 ```bash
-bash infra/deploy.sh                            # crea o actualiza todo
-FRECUENCIA="rate(5 minutes)" bash infra/deploy.sh   # con otra frecuencia
-bash infra/frecuencia.sh "cron(0 6 * * ? *)"    # solo el reloj
-bash infra/destroy.sh                           # avisa y no hace nada
-bash infra/destroy.sh --si                      # desmonta de verdad
+cd infra/bootstrap
+terraform init && terraform apply
 ```
 
-Requiere AWS CLI configurado y acceso a Amazon Bedrock en la región. Nada más.
-
-## Cómo está montado
-
-Cada capa expone dos funciones con el mismo patrón:
+Después, el entorno:
 
 ```bash
-almacenamiento::desplegar()
-almacenamiento::destruir()
+cd infra/environments/prod
+cp backend.hcl.ejemplo backend.hcl     # y pon el ID de tu cuenta
+terraform init -backend-config=backend.hcl
+terraform apply
 ```
 
-`deploy.sh` las llama en orden; `destroy.sh` en orden inverso, para que lo que depende de
-algo se borre antes que aquello de lo que depende. Los scripts de capa no se ejecutan
-sueltos: se cargan con `source` y solo definen funciones.
+`backend.hcl` está fuera del repositorio porque el nombre del bucket lleva el ID de la
+cuenta. El backend de Terraform no admite variables, así que la única forma de no
+publicarlo es la configuración parcial.
 
-Todo lo configurable vive en `config.sh` y en ningún otro sitio. Cualquier variable se puede
-sobreescribir desde el entorno sin editar nada:
+## Uso diario
 
 ```bash
-BUCKET=otro-bucket REGION=us-west-2 bash infra/deploy.sh
+cd infra/environments/prod
+
+terraform plan                                     # qué cambiaría
+terraform apply                                    # aplicarlo
+terraform apply -var 'frecuencia=rate(5 minutes)'  # acelerar al agente
+terraform output web_publica                       # la URL
+terraform destroy                                  # desmontar todo
 ```
 
-## Es idempotente
+Cambiar el ritmo del agente no toca el código ni los datos: es una variable.
 
-Volver a ejecutar `deploy.sh` no duplica nada. Cada recurso se comprueba antes de crearse,
-con un helper que hace legible el patrón:
+## Decisiones
 
-```bash
-if existe aws dynamodb describe-table --table-name "$TABLA" --region "$REGION"; then
-  salta "tabla $TABLA ya existe"
-else
-  ...
-fi
-```
+**El state está bloqueado.** El backend de S3 usa `use_lockfile = true`, el bloqueo nativo
+de S3. Antes esto exigía una tabla de DynamoDB aparte solo para los locks; desde Terraform
+1.10 ya no. El bucket tiene versionado, así que un `apply` que corrompa el state se puede
+revertir.
 
-La segunda pasada no crea nada: solo reaplica lo que es barato reaplicar — políticas,
-retención, configuración del bucket — y actualiza el código de la Lambda.
+**Las etiquetas se ponen una vez.** `default_tags` en el provider etiqueta todos los
+recursos. No hay un solo `tags = {...}` repetido en los módulos.
 
-## Qué hay que saber si vienes de una herramienta declarativa
+**El zip lo hace Terraform.** Un `data "archive_file"` empaqueta `src/` y su hash entra en
+`source_code_hash`, así que cambiar el Python es suficiente para que el siguiente `apply`
+suba el código nuevo. Sin scripts externos.
 
-Esto se escribió primero con CloudFormation y luego con SAM antes de acabar en bash. Las
-diferencias que se notan al vivir con ello:
+**La web es infraestructura.** `index.html` es un `aws_s3_object` con `etag = filemd5(...)`.
+Si cambia el HTML, `terraform plan` lo detecta como cualquier otro cambio.
 
-| | Aquí |
-|---|---|
-| **`destroy.sh` existe** | Un script sabe crear, no sabe destruir. El orden de borrado se mantiene a mano y hay que actualizarlo cada vez que se añade un recurso. Es el precio principal. |
-| **La idempotencia se escribe** | El helper `existe()` es la respuesta a "¿esto ya está?", repetida por recurso. Una herramienta declarativa no cobra por esa pregunta. |
-| **Sin rollback** | Si falla a la mitad, queda a medias. Por eso cada paso es idempotente: la recuperación es volver a lanzarlo. |
-| **Quitar un recurso no lo borra** | Si borras un recurso del script, sigue vivo en AWS cobrando. Nadie avisa. |
-| **La propagación de IAM se maneja a mano** | Un rol recién creado tarda segundos en ser usable. De ahí `reintentar 6 10 aws lambda create-function`. |
-| **Las etiquetas, en tres formatos** | El AWS CLI las pide como mapa, como lista o como JSON según el servicio. Los tres están declarados juntos en `config.sh`. |
-
-A cambio: todo está en un lenguaje que ya sabes leer, sin transform, sin estado y sin
-ninguna capa entre lo que escribes y la llamada a la API.
+**Ojo con los ARN de las políticas gestionadas.** `AWSLambdaBasicExecutionRole` vive bajo
+`service-role/` y `AWSXRayDaemonWriteAccess` no. Están escritos completos en el módulo del
+agente en vez de construidos con un prefijo común, porque adivinarlo cuesta un `apply`
+fallido.
 
 ## Qué trae
 
@@ -91,12 +104,13 @@ ninguna capa entre lo que escribes y la llamada a la API.
 | arm64 (Graviton) | Mismo código, ~20% más barato. |
 | AWS X-Ray | Trazas de cada ejecución. |
 | PITR en DynamoDB | Recuperación puntual de la memoria del agente. |
-| Etiquetas | Todos los recursos por proyecto y entorno. |
+| Etiquetas | Todos los recursos, vía `default_tags`. |
+| Condición anti confused-deputy | El rol del scheduler solo lo asume esta cuenta. |
 
-Para enterarte si el agente se rompe, suscribe tu correo:
+Para enterarte si el agente se rompe:
 
 ```bash
-aws sns subscribe --topic-arn "arn:aws:sns:us-east-1:<cuenta>:postales-del-ecuador-alertas" \
+aws sns subscribe --topic-arn "$(terraform output -raw tema_alertas)" \
   --protocol email --notification-endpoint tu@correo.com
 ```
 
@@ -119,8 +133,13 @@ aws logs filter-log-events \
   --query 'events[].message' --output text | tr '\t' '\n'
 ```
 
+## Añadir un entorno
+
+Copiar `environments/prod` a `environments/dev`, cambiar `nombre_bucket` y el `key` del
+backend, y aplicar. Los módulos no cambian: para eso están.
+
 ## Lo que falta, dicho claro
 
 - **La web va por HTTP.** Los endpoints de sitio estático de S3 no soportan TLS. La solución
   es CloudFront delante.
-- **El despliegue se hace desde un portátil**, no desde un pipeline.
+- **El `apply` se hace desde un portátil**, no desde un pipeline.

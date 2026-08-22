@@ -1,0 +1,7 @@
+# Copiar a backend.hcl y sustituir <cuenta> por el ID de la cuenta AWS.
+# El bucket lo crea infra/bootstrap.
+bucket       = "postales-tfstate-<cuenta>"
+key          = "postales-del-ecuador/terraform.tfstate"
+region       = "us-east-1"
+encrypt      = true
+use_lockfile = true

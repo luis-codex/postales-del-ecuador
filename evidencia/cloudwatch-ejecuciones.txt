@@ -295,3 +295,30 @@ Init Duration: 554.74 ms
 XRAY TraceId: 1-6a89d6aa-60bad44e6abbd3b569bf4383
 SegmentId: ca8818456d5087a7
 Sampled: true
+
+======================================================================
+Bloque 3 - infraestructura en bash
+Exportado: 2026-08-22T13:49:15-05:00
+======================================================================
+INIT_START Runtime Version: python:3.12.mainlinev2.v27
+Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:6bd9bb5ef92b1d497f0d321ae5cc98e2a8cdebca38437fb77b21c1fab1eb17cb
+START RequestId: 7b049281-a233-4d59-9f90-530a6268011a Version: $LATEST
+[agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T13:44:01.437217-05:00
+[memoria] 16 postales previas en el historial
+[decision] lugar=Salinas de Guaranda tono=sensorial y concreto, puro olor y textura
+[clima] Salinas de Guaranda: 12.6C, llovizna ligera, humedad 64%, viento 4.8km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=640 tokens_out=210
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T13-44-01 guardada
+[s3] archivo republicado con 17 postales
+[agente] listo. 'Chomba puesta, niebla en las calles' desde Salinas de Guaranda. archivo: 17 postales
+END RequestId: 7b049281-a233-4d59-9f90-530a6268011a
+REPORT RequestId: 7b049281-a233-4d59-9f90-530a6268011a
+Duration: 2800.41 ms
+Billed Duration: 3348 ms
+Memory Size: 512 MB
+Max Memory Used: 105 MB
+Init Duration: 547.30 ms
+XRAY TraceId: 1-6a89edf0-4517a9c000d6936d6d3b3582
+SegmentId: 90966d70b2abcc85
+Sampled: true
