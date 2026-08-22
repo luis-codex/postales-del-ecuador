@@ -8,18 +8,19 @@ infra/
 ├── template.yaml       SAM · toda la infraestructura (185 líneas)
 ├── bootstrap.yaml      el bucket de artefactos · se despliega una vez
 ├── params/prod.json    parámetros por entorno
-├── scripts/
-│   ├── deploy.sh       empaqueta y despliega
-│   ├── frecuencia.sh   cambia cada cuánto despierta el agente
-│   ├── invocar.sh      lo despierta a mano y muestra sus logs
-│   ├── evidencia.sh    lista cada vez que ha despertado y quién lo despertó
-│   └── restaurar.sh    repuebla la memoria desde un respaldo
-└── backup/             volcados de la tabla antes de migraciones
+└── scripts/
+    ├── deploy.sh       empaqueta y despliega
+    ├── frecuencia.sh   cambia cada cuánto despierta el agente
+    └── restaurar.sh    repuebla la memoria desde un respaldo
 ```
 
 Los `.sh` **no crean infraestructura**. `deploy.sh` es un envoltorio de `aws cloudformation
-package` + `deploy`; los otros son herramientas de operación. Los recursos están declarados
-en las dos plantillas.
+package` + `deploy`; los otros dos son herramientas de operación. Los recursos están
+declarados en las dos plantillas.
+
+Hubo un tercer y un cuarto script, `invocar.sh` y `evidencia.sh`. Cada uno envolvía un solo
+comando de AWS, así que no eran scripts: eran alias con ínfulas. Los comandos están más
+abajo, que es donde tenían que estar.
 
 ## Por qué SAM y no CloudFormation crudo
 
@@ -102,3 +103,22 @@ aws sns subscribe --topic-arn "$(aws cloudformation describe-stacks \
 - **La web va por HTTP.** Los endpoints de sitio estático de S3 no soportan TLS. La solución
   es CloudFront delante.
 - **El despliegue se hace desde un portátil**, no desde un pipeline.
+
+## Operar el agente a mano
+
+Despertarlo ahora mismo y ver qué hizo:
+
+```bash
+aws lambda invoke --function-name postales-del-ecuador \
+  --cli-binary-format raw-in-base64-out --payload '{}' \
+  --log-type Tail --query LogResult --output text /dev/null | base64 -d
+```
+
+Ver cada vez que ha despertado y quién lo despertó — la evidencia de que corre solo:
+
+```bash
+aws logs filter-log-events \
+  --log-group-name /aws/lambda/postales-del-ecuador \
+  --filter-pattern '"[agente] despierta"' \
+  --query 'events[].message' --output text | tr '\t' '\n'
+```
