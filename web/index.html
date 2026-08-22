@@ -48,6 +48,8 @@
   .d-txt .cverde{fill:#93c4a4} .d-txt .coro{fill:#e0b45f} .d-txt .cblanco{fill:var(--txt)}
   .d-lbl text{font-size:10.5px; fill:var(--txt2); paint-order:stroke;
              stroke:var(--bg); stroke-width:4px; stroke-linejoin:round}
+  .d-nota text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; text-anchor:middle;
+               font-size:9.5px; fill:var(--txt3)}
   article{padding:44px 0; border-bottom:1px solid var(--linea)}
   .meta{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
   .chip{font-size:11.5px; padding:4px 10px; border-radius:20px; background:var(--bg2);
@@ -115,6 +117,12 @@
         <text x="330" y="232">escribe</text>
         <text x="487" y="238">publica</text>
       </g>
+      <g class="d-nota">
+        <text x="92"  y="336">↳ traducido a sensaciones</text>
+        <text x="92"  y="349">el modelo no ve números</text>
+        <text x="320" y="336">↻ valida 6 reglas</text>
+        <text x="320" y="349">reintenta hasta 3 veces</text>
+      </g>
       <g class="d-node">
         <rect class="verde" x="15"  y="20"  width="225" height="52" rx="26"/>
         <rect class="gris"  x="420" y="20"  width="205" height="52" rx="8"/>
@@ -130,7 +138,7 @@
         <text x="522" y="41"  class="t1">Amazon DynamoDB</text>
         <text x="522" y="59"  class="t2">la memoria</text>
         <text x="320" y="166" class="t1 cblanco">AWS Lambda</text>
-        <text x="320" y="184" class="t2">el agente</text>
+        <text x="320" y="184" class="t2">el agente · arm64</text>
         <text x="92"  y="282" class="t1">Open-Meteo</text>
         <text x="92"  y="300" class="t2">clima real</text>
         <text x="320" y="282" class="t1 coro">Amazon Bedrock</text>
@@ -160,12 +168,12 @@
         AWS Weekend Challenge</a>
     </p>
     <p>
-      Todo el agente cabe en dos archivos de Python sin dependencias externas. El despliegue
-      completo es un script de AWS CLI.
+      Todo el agente cabe en dos archivos de Python sin dependencias externas. La
+      infraestructura es Terraform: módulos y un entorno, con el estado remoto en S3.
     </p>
     <p>
       Amazon Bedrock (Nova Pro) · AWS Lambda · Amazon EventBridge Scheduler · Amazon DynamoDB ·
-      Amazon S3 · AWS IAM. Clima real vía Open-Meteo.
+      Amazon S3 · Amazon SNS · Amazon CloudWatch · AWS X-Ray · AWS IAM. Clima real vía Open-Meteo.
     </p>
   </footer>
 
