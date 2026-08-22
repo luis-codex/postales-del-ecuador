@@ -83,23 +83,23 @@ Sin esa capa, treinta días de postales serían la misma postal treinta veces.
 ```
 src/
 ├── handler.py                     adaptador Lambda: lee el entorno y arranca el caso de uso
-├── dominio/                       las reglas. No importa nada fuera de la librería estándar
-│   ├── modelos.py                 Lugar · Clima · Borrador · Postal
-│   ├── sensaciones.py             clima → cómo se siente el cuerpo
-│   ├── seleccion.py               qué lugar y qué tono tocan, según la memoria
-│   └── validacion.py              las seis reglas que una postal debe cumplir
-├── aplicacion/
-│   └── escribir_postal.py         el caso de uso, con el bucle validar/reintentar
-├── infraestructura/               los adaptadores: DynamoDB · Open-Meteo · Bedrock · S3
-└── data/lugares.json              los 50 lugares con coordenadas y "alma"
+├── domain/                        las reglas. No importa nada fuera de la librería estándar
+│   ├── models.py                  Place · Weather · Draft · Postcard
+│   ├── sensations.py              clima → cómo se siente el cuerpo
+│   ├── selection.py               qué lugar y qué tono tocan, según la memoria
+│   └── validation.py              las seis reglas que una postal debe cumplir
+├── application/
+│   └── write_postcard.py          el caso de uso, con el bucle validar/reintentar
+├── infrastructure/                los adaptadores: DynamoDB · Open-Meteo · Bedrock · S3
+└── data/places.json               los 50 lugares con coordenadas y "alma"
 
 tests/             el dominio, sin AWS ni red
 web/index.html     la galería pública (solo lectura, sin botón de generar)
 infra/             Terraform — ver infra/README.md
 ```
 
-Las dependencias apuntan hacia adentro: `dominio` no sabe que AWS existe, `aplicacion`
-recibe los adaptadores inyectados, e `infraestructura` traduce a modelos del dominio en la
+Las dependencias apuntan hacia adentro: `domain` no sabe que AWS existe, `application`
+recibe los adaptadores inyectados, e `infrastructure` traduce a modelos del dominio en la
 frontera. Por eso las reglas se pueden probar sin credenciales:
 
 ```bash
@@ -140,3 +140,5 @@ texto. El resultado es más pequeño y más coherente.
 ## Licencia
 
 MIT
+
+El código está en inglés; las postales y el prompt que las genera, en español.

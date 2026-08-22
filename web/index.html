@@ -54,7 +54,7 @@
   .meta{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
   .chip{font-size:11.5px; padding:4px 10px; border-radius:20px; background:var(--bg2);
         border:1px solid var(--linea); color:var(--txt2); white-space:nowrap}
-  .chip.lugar{color:var(--acento); border-color:rgba(217,164,65,.35); background:rgba(217,164,65,.07)}
+  .chip.place{color:var(--acento); border-color:rgba(217,164,65,.35); background:rgba(217,164,65,.07)}
   .chip.auto{color:var(--verde); border-color:rgba(92,138,106,.35); background:rgba(92,138,106,.07)}
   h2.titulo{font-family:Georgia,"Times New Roman",serif; font-weight:400; font-style:italic;
             font-size:clamp(24px,4vw,31px); line-height:1.25; margin:0 0 16px; color:var(--txt)}
@@ -194,40 +194,40 @@ function esc(s){
 }
 
 function tarjeta(p){
-  const c = p.clima || {};
+  const c = p.weather || {};
   const clima = [
-    c.descripcion ? esc(c.descripcion) : null,
-    (c.temperatura!==undefined && c.temperatura!==null) ? esc(c.temperatura)+"°C" : null,
-    (c.humedad!==undefined && c.humedad!==null) ? "humedad "+esc(c.humedad)+"%" : null,
+    c.description ? esc(c.description) : null,
+    (c.temperature!==undefined && c.temperature!==null) ? esc(c.temperature)+"°C" : null,
+    (c.humidity!==undefined && c.humidity!==null) ? "humedad "+esc(c.humidity)+"%" : null,
   ].filter(Boolean).join(" · ");
 
-  const auto = p.disparador === "eventbridge-scheduler";
+  const auto = p.trigger === "eventbridge-scheduler";
 
   return `<article>
     <div class="meta">
-      <span class="chip lugar">${esc(p.lugar)}${p.provincia ? ", "+esc(p.provincia) : ""}</span>
-      <span class="chip">${fecha(p.generada_en)}</span>
+      <span class="chip lugar">${esc(p.place)}${p.province ? ", "+esc(p.province) : ""}</span>
+      <span class="chip">${fecha(p.generated_at)}</span>
       ${clima ? `<span class="chip">${clima}</span>` : ""}
       ${auto ? `<span class="chip auto">▸ despertado por el scheduler</span>` : ""}
     </div>
-    <h2 class="titulo">${esc(p.titulo)}</h2>
-    <p class="texto">${esc(p.postal)}</p>
-    ${p.tono ? `<p class="pie">tono elegido: ${esc(p.tono)}</p>` : ""}
+    <h2 class="titulo">${esc(p.title)}</h2>
+    <p class="texto">${esc(p.text)}</p>
+    ${p.tone ? `<p class="pie">tono elegido: ${esc(p.tone)}</p>` : ""}
   </article>`;
 }
 
 fetch("data/archive.json?v=" + Date.now())
   .then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
   .then(d => {
-    const ps = d.postales || [];
-    const lugares = new Set(ps.map(p => p.lugar)).size;
-    const autos = ps.filter(p => p.disparador === "eventbridge-scheduler").length;
+    const ps = d.postcards || [];
+    const lugares = new Set(ps.map(p => p.place)).size;
+    const autos = ps.filter(p => p.trigger === "eventbridge-scheduler").length;
 
     document.getElementById("stats").innerHTML = `
       <div><b>${ps.length}</b> postales escritas</div>
       <div><b>${lugares}</b> lugares visitados</div>
       <div><b>${autos}</b> sin intervención humana</div>
-      <div><b>${d.actualizado ? fecha(d.actualizado) : "—"}</b> última actualización</div>`;
+      <div><b>${d.updated_at ? fecha(d.updated_at) : "—"}</b> última actualización</div>`;
 
     document.getElementById("postales").innerHTML = ps.length
       ? ps.map(tarjeta).join("")

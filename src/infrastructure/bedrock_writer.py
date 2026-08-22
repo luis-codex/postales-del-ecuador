@@ -1,20 +1,24 @@
-"""Le pide la postal al modelo.
+"""Asks the model for the postcard.
 
-El prompt vive aqui y no en el dominio porque su forma la dicta Bedrock: el
-ejemplo few-shot y la exigencia de responder solo con JSON son detalles del
-modelo. Las reglas que cita si son del dominio, y se leen de alli.
+The prompt lives here and not in the domain because Bedrock dictates its shape:
+the few-shot example and the demand to answer with JSON only are details of the
+model. The rules it cites do belong to the domain, and are read from there.
+
+The prompt itself stays in Spanish: the product is Spanish-language postcards.
 """
 
 import json
 import re
 from datetime import datetime
 
-from dominio.modelos import ZONA_ECUADOR, Borrador, Clima, Lugar
-from dominio.sensaciones import describir, momento_del_dia
+import boto3
 
-LUGARES_QUE_MENCIONA = 6
+from domain.models import ECUADOR_TZ, Draft, Place, Weather
+from domain.sensations import describe, time_of_day
 
-EJEMPLO = (
+PLACES_MENTIONED = 6
+
+EXAMPLE = (
     '{"titulo": "Nadie levanta la vista", "postal": "La neblina se comio el volcan otra vez. '
     "Todos saben que sigue ahi, detras, pero hoy no le toca ser visto. En el mercado las senoras "
     "cubren las frutas con plastico y siguen conversando como si nada. El agua no cae, mas bien "
@@ -25,24 +29,24 @@ EJEMPLO = (
 )
 
 
-def _construir_prompt(lugar: Lugar, clima: Clima, tono: str, memoria) -> str:
-    visitados = [p.lugar for p in memoria[:LUGARES_QUE_MENCIONA] if p.lugar]
-    recuerdo = (
-        f"\nYa escribiste desde: {', '.join(visitados)}. No repitas sus imagenes."
-        if visitados else ""
+def _build_prompt(place: Place, weather: Weather, tone: str, memory) -> str:
+    visited = [p.place for p in memory[:PLACES_MENTIONED] if p.place]
+    recollection = (
+        f"\nYa escribiste desde: {', '.join(visited)}. No repitas sus imagenes."
+        if visited else ""
     )
-    ahora = datetime.now(ZONA_ECUADOR)
+    now = datetime.now(ECUADOR_TZ)
 
     return f"""Escribes una postal desde un lugar del Ecuador. Estas ahi ahora mismo y anotas lo que ves.
 
-LUGAR: {lugar.nombre}, {lugar.provincia}
-QUE HAY AHI: {lugar.alma}
-CUANDO: {momento_del_dia(ahora, clima.es_de_dia)}
+LUGAR: {place.name}, {place.province}
+QUE HAY AHI: {place.soul}
+CUANDO: {time_of_day(now, weather.is_daytime)}
 
 COMO SE SIENTE EL LUGAR AHORA MISMO:
-{describir(clima)}
+{describe(weather)}
 
-TONO DE HOY: {tono}{recuerdo}
+TONO DE HOY: {tone}{recollection}
 
 REGLAS INNEGOCIABLES:
 1. PROHIBIDO escribir numeros, grados, porcentajes o kilometros por hora. Ni uno.
@@ -59,41 +63,41 @@ REGLAS INNEGOCIABLES:
 7. Espanol de Ecuador, natural. Sin exotizar el pais.
 
 EJEMPLO DEL REGISTRO QUE BUSCO (otro lugar, otro dia):
-{EJEMPLO}
+{EXAMPLE}
 
 Responde UNICAMENTE con el JSON: {{"titulo": "...", "postal": "..."}}"""
 
 
-class EscritorBedrock:
-    def __init__(self, modelo, region):
-        import boto3
-        self.modelo = modelo
+class BedrockWriter:
+    def __init__(self, model, region):
+        self.model = model
         self._bedrock = boto3.client("bedrock-runtime", region_name=region)
 
-    def escribir(self, lugar: Lugar, clima: Clima, tono: str, memoria,
-                 intento: int) -> Borrador | None:
-        respuesta = self._bedrock.converse(
-            modelId=self.modelo,
+    def write(self, place: Place, weather: Weather, tone: str, memory,
+              attempt: int) -> Draft | None:
+        response = self._bedrock.converse(
+            modelId=self.model,
             messages=[{"role": "user", "content": [
-                {"text": _construir_prompt(lugar, clima, tono, memoria)}]}],
+                {"text": _build_prompt(place, weather, tone, memory)}]}],
             inferenceConfig={"maxTokens": 1200, "temperature": 0.9, "topP": 0.9},
         )
-        texto = respuesta["output"]["message"]["content"][0]["text"]
-        uso = respuesta.get("usage", {})
-        print(f"[bedrock] intento {intento} modelo={self.modelo} "
-              f"tokens_in={uso.get('inputTokens')} tokens_out={uso.get('outputTokens')}")
+        blocks = response.get("output", {}).get("message", {}).get("content", [])
+        text = next((block["text"] for block in blocks if "text" in block), "")
+        usage = response.get("usage", {})
+        print(f"[bedrock] attempt {attempt} model={self.model} "
+              f"tokens_in={usage.get('inputTokens')} tokens_out={usage.get('outputTokens')}")
 
-        encontrado = re.search(r"\{.*\}", texto, re.DOTALL)
-        if not encontrado:
-            print(f"[validacion] intento {intento}: no devolvio JSON")
+        found = re.search(r"\{.*\}", text, re.DOTALL)
+        if not found:
+            print(f"[validation] attempt {attempt}: no JSON returned")
             return None
         try:
-            datos = json.loads(encontrado.group(0))
+            data = json.loads(found.group(0))
         except json.JSONDecodeError as error:
-            print(f"[validacion] intento {intento}: JSON invalido ({error})")
+            print(f"[validation] attempt {attempt}: invalid JSON ({error})")
             return None
 
-        return Borrador(
-            titulo=(datos.get("titulo") or "").strip(),
-            texto=(datos.get("postal") or "").strip(),
+        return Draft(
+            title=(data.get("titulo") or "").strip(),
+            text=(data.get("postal") or "").strip(),
         )

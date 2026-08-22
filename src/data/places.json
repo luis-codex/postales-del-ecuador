@@ -1,0 +1,352 @@
+[
+  {
+    "name": "Quito",
+    "province": "Pichincha",
+    "lat": -0.18,
+    "lon": -78.47,
+    "soul": "capital de altura, casco colonial de piedra volcanica, el Pichincha siempre encima"
+  },
+  {
+    "name": "Otavalo",
+    "province": "Imbabura",
+    "lat": 0.23,
+    "lon": -78.26,
+    "soul": "mercado de textiles, lana tenida, el Imbabura y el Cotacachi vigilando el valle"
+  },
+  {
+    "name": "Laguna de Cuicocha",
+    "province": "Imbabura",
+    "lat": 0.31,
+    "lon": -78.36,
+    "soul": "laguna verde dentro de un crater, dos islotes en el centro, viento constante"
+  },
+  {
+    "name": "Ibarra",
+    "province": "Imbabura",
+    "lat": 0.35,
+    "lon": -78.12,
+    "soul": "la ciudad blanca, casas encaladas, helados de paila hechos a mano"
+  },
+  {
+    "name": "Tulcan",
+    "province": "Carchi",
+    "lat": 0.81,
+    "lon": -77.72,
+    "soul": "frontera fria, cipreses esculpidos del cementerio, paramo alto"
+  },
+  {
+    "name": "Mindo",
+    "province": "Pichincha",
+    "lat": -0.05,
+    "lon": -78.77,
+    "soul": "bosque nublado, colibries, cascadas escondidas, humedad permanente"
+  },
+  {
+    "name": "Papallacta",
+    "province": "Napo",
+    "lat": -0.37,
+    "lon": -78.14,
+    "soul": "aguas termales en el paramo, vapor contra el frio, camino a la Amazonia"
+  },
+  {
+    "name": "Mitad del Mundo",
+    "province": "Pichincha",
+    "lat": -0.0,
+    "lon": -78.46,
+    "soul": "la linea equinoccial, el monumento, la idea de estar en dos hemisferios"
+  },
+  {
+    "name": "Banos de Agua Santa",
+    "province": "Tungurahua",
+    "lat": -1.4,
+    "lon": -78.42,
+    "soul": "valle entre cascadas, el volcan Tungurahua sobre el pueblo, neblina que sube del rio"
+  },
+  {
+    "name": "Ambato",
+    "province": "Tungurahua",
+    "lat": -1.24,
+    "lon": -78.62,
+    "soul": "ciudad de las flores y las frutas, huertos en terraza, viento seco"
+  },
+  {
+    "name": "Latacunga",
+    "province": "Cotopaxi",
+    "lat": -0.93,
+    "lon": -78.62,
+    "soul": "piedra pomez gris, la sombra del Cotopaxi, mercados de altura"
+  },
+  {
+    "name": "Laguna del Quilotoa",
+    "province": "Cotopaxi",
+    "lat": -0.86,
+    "lon": -78.9,
+    "soul": "crater con agua turquesa a 3800 metros, borde filoso, aire delgado"
+  },
+  {
+    "name": "Parque Nacional Cotopaxi",
+    "province": "Cotopaxi",
+    "lat": -0.68,
+    "lon": -78.44,
+    "soul": "paramo abierto, el cono nevado perfecto, caballos salvajes, silencio"
+  },
+  {
+    "name": "Riobamba",
+    "province": "Chimborazo",
+    "lat": -1.67,
+    "lon": -78.65,
+    "soul": "la sultana de los Andes, tren antiguo, el Chimborazo dominando el horizonte"
+  },
+  {
+    "name": "Volcan Chimborazo",
+    "province": "Chimborazo",
+    "lat": -1.47,
+    "lon": -78.82,
+    "soul": "el punto mas lejano del centro de la Tierra, arena volcanica, vicunas"
+  },
+  {
+    "name": "Alausi",
+    "province": "Chimborazo",
+    "lat": -2.2,
+    "lon": -78.85,
+    "soul": "pueblo colgado de la montana, la Nariz del Diablo, rieles en zigzag"
+  },
+  {
+    "name": "Guaranda",
+    "province": "Bolivar",
+    "lat": -1.59,
+    "lon": -79.0,
+    "soul": "ciudad de las siete colinas, carnaval, pajaro azul de caña"
+  },
+  {
+    "name": "Salinas de Guaranda",
+    "province": "Bolivar",
+    "lat": -1.4,
+    "lon": -79.0,
+    "soul": "pueblo de queseros comunitarios en el paramo, niebla que entra por las calles"
+  },
+  {
+    "name": "Cuenca",
+    "province": "Azuay",
+    "lat": -2.9,
+    "lon": -79.0,
+    "soul": "cuatro rios, cupulas azules, casas republicanas, sombreros de paja toquilla"
+  },
+  {
+    "name": "Parque Nacional Cajas",
+    "province": "Azuay",
+    "lat": -2.85,
+    "lon": -79.22,
+    "soul": "paramo con doscientas lagunas, bosque de papel enano, niebla que va y viene"
+  },
+  {
+    "name": "Ingapirca",
+    "province": "Canar",
+    "lat": -2.54,
+    "lon": -78.87,
+    "soul": "ruinas canari e inca, el templo del sol eliptico, piedra encajada sin mortero"
+  },
+  {
+    "name": "Loja",
+    "province": "Loja",
+    "lat": -3.99,
+    "lon": -79.2,
+    "soul": "ciudad de musicos, valle templado, guitarras y bandas de pueblo"
+  },
+  {
+    "name": "Vilcabamba",
+    "province": "Loja",
+    "lat": -4.26,
+    "lon": -79.22,
+    "soul": "el valle de la longevidad, clima perpetuo de primavera, montanas verdes redondeadas"
+  },
+  {
+    "name": "Saraguro",
+    "province": "Loja",
+    "lat": -3.62,
+    "lon": -79.24,
+    "soul": "pueblo kichwa de vestimenta negra, telares, neblina de altura"
+  },
+  {
+    "name": "Zaruma",
+    "province": "El Oro",
+    "lat": -3.69,
+    "lon": -79.61,
+    "soul": "pueblo minero de madera pintada, calles imposibles en pendiente, cafe propio"
+  },
+  {
+    "name": "Parque Nacional Podocarpus",
+    "province": "Zamora Chinchipe",
+    "lat": -4.12,
+    "lon": -79.13,
+    "soul": "bosque nublado que baja a la selva, orquideas, mil especies de aves"
+  },
+  {
+    "name": "Guayaquil",
+    "province": "Guayas",
+    "lat": -2.17,
+    "lon": -79.92,
+    "soul": "puerto sobre el rio Guayas, calor humedo, malecon, cerro Santa Ana de casas de colores"
+  },
+  {
+    "name": "Salinas",
+    "province": "Santa Elena",
+    "lat": -2.21,
+    "lon": -80.96,
+    "soul": "peninsula, edificios frente al mar, brisa salada, balleneros antiguos"
+  },
+  {
+    "name": "Montanita",
+    "province": "Santa Elena",
+    "lat": -1.83,
+    "lon": -80.75,
+    "soul": "pueblo de surf, cañas y hamacas, olas largas, noches sin reloj"
+  },
+  {
+    "name": "Puerto Lopez",
+    "province": "Manabi",
+    "lat": -1.56,
+    "lon": -80.81,
+    "soul": "bahia de pescadores, ballenas jorobadas en temporada, botes de colores en la arena"
+  },
+  {
+    "name": "Isla de la Plata",
+    "province": "Manabi",
+    "lat": -1.28,
+    "lon": -81.07,
+    "soul": "la pequena Galapagos, piqueros de patas azules, acantilados secos sobre mar abierto"
+  },
+  {
+    "name": "Manta",
+    "province": "Manabi",
+    "lat": -0.95,
+    "lon": -80.73,
+    "soul": "puerto atunero, viento fuerte, playa larga, ceviche de la manana"
+  },
+  {
+    "name": "Bahia de Caraquez",
+    "province": "Manabi",
+    "lat": -0.6,
+    "lon": -80.42,
+    "soul": "ciudad ecologica en una punta de tierra, estuario, manglares y fragatas"
+  },
+  {
+    "name": "Canoa",
+    "province": "Manabi",
+    "lat": -0.46,
+    "lon": -80.46,
+    "soul": "playa larguisima bajo acantilados, parapente, atardeceres sin obstaculos"
+  },
+  {
+    "name": "Mompiche",
+    "province": "Esmeraldas",
+    "lat": 0.5,
+    "lon": -80.02,
+    "soul": "playa de arena negra, manglar, la ola izquierda mas larga del pais"
+  },
+  {
+    "name": "Atacames",
+    "province": "Esmeraldas",
+    "lat": 0.87,
+    "lon": -79.85,
+    "soul": "marimba, cocos abiertos, playa caliente del norte, musica hasta tarde"
+  },
+  {
+    "name": "Esmeraldas",
+    "province": "Esmeraldas",
+    "lat": 0.97,
+    "lon": -79.65,
+    "soul": "provincia verde, herencia afroecuatoriana, rios anchos que llegan al mar"
+  },
+  {
+    "name": "Machala",
+    "province": "El Oro",
+    "lat": -3.26,
+    "lon": -79.96,
+    "soul": "capital bananera del mundo, plantaciones hasta el horizonte, humedad pesada"
+  },
+  {
+    "name": "Santo Domingo",
+    "province": "Santo Domingo",
+    "lat": -0.25,
+    "lon": -79.17,
+    "soul": "cruce de caminos entre sierra y costa, lluvia frecuente, tierra colorada"
+  },
+  {
+    "name": "Tena",
+    "province": "Napo",
+    "lat": -0.99,
+    "lon": -77.82,
+    "soul": "puerta de la selva, rios de aguas rapidas, guayusa al amanecer"
+  },
+  {
+    "name": "Puyo",
+    "province": "Pastaza",
+    "lat": -1.49,
+    "lon": -78.0,
+    "soul": "ciudad amazonica de lluvia constante, ceramica shuar, verde saturado"
+  },
+  {
+    "name": "Macas",
+    "province": "Morona Santiago",
+    "lat": -2.31,
+    "lon": -78.12,
+    "soul": "vista al volcan Sangay desde la selva, rio Upano, calor humedo"
+  },
+  {
+    "name": "Puerto Francisco de Orellana",
+    "province": "Orellana",
+    "lat": -0.46,
+    "lon": -76.99,
+    "soul": "confluencia del Coca y el Napo, canoas largas, frontera del petroleo y la selva"
+  },
+  {
+    "name": "Reserva Cuyabeno",
+    "province": "Sucumbios",
+    "lat": -0.25,
+    "lon": -76.18,
+    "soul": "lagunas negras inundadas, delfines rosados, arboles con raices en el agua"
+  },
+  {
+    "name": "Parque Nacional Yasuni",
+    "province": "Orellana",
+    "lat": -0.95,
+    "lon": -75.9,
+    "soul": "el lugar mas biodiverso del planeta, dosel cerrado, ruido de insectos sin pausa"
+  },
+  {
+    "name": "Baeza",
+    "province": "Napo",
+    "lat": -0.46,
+    "lon": -77.89,
+    "soul": "pueblo de montana en la ceja de selva, truchas, neblina que baja a las cuatro"
+  },
+  {
+    "name": "Zamora",
+    "province": "Zamora Chinchipe",
+    "lat": -4.07,
+    "lon": -78.95,
+    "soul": "ciudad de aves y cascadas, el reloj gigante en la ladera, calor de valle"
+  },
+  {
+    "name": "Puerto Ayora, Santa Cruz",
+    "province": "Galapagos",
+    "lat": -0.74,
+    "lon": -90.31,
+    "soul": "tortugas gigantes, iguanas marinas en el muelle, lava seca y cactus"
+  },
+  {
+    "name": "Puerto Baquerizo Moreno, San Cristobal",
+    "province": "Galapagos",
+    "lat": -0.9,
+    "lon": -89.61,
+    "soul": "lobos marinos durmiendo en las bancas del malecon, agua transparente"
+  },
+  {
+    "name": "Isla Isabela",
+    "province": "Galapagos",
+    "lat": -0.96,
+    "lon": -90.96,
+    "soul": "la isla mas grande, flamencos en lagunas salobres, volcanes activos, arena blanca"
+  }
+]

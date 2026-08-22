@@ -1,11 +1,17 @@
-Evidencia de ejecuciones autonomas del agente Postales del Ecuador
+Evidence of autonomous runs - Postales del Ecuador agent
 Log group: /aws/lambda/postales-del-ecuador  ·  region us-east-1
-Exportado: 2026-08-22T11:59:09-05:00
-El campo 'disparador' distingue quien desperto al agente.
+Exported: 2026-08-22
+
+The 'trigger' / 'disparador' field says who woke the agent up. Entries reading
+'eventbridge-scheduler' had no human involved.
+
+The code was translated from Spanish to English partway through the weekend,
+so earlier runs log as [agente] despierta and later ones as [agent] waking up.
+Both are the same agent. The log group was also recreated once during an
+infrastructure migration, which is why these were exported in batches.
 ======================================================================
-INIT_START Runtime Version: python:3.12.mainlinev2.v27
-Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:fb4a5cbb4aeb1909cf946882192e0e708d8756b3a866c3ab89a3cfcfffeca7bc
-START RequestId: c33a0a51-828f-45b3-9006-2ee6c4d4a978 Version: $LATEST
+
+--- BATCH 1 · earlier runs, Spanish logs ---
 [agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T10:43:26.671300-05:00
 [memoria] 0 postales previas en el historial
 [decision] lugar=Guaranda tono=melancolico y contenido
@@ -15,14 +21,6 @@ START RequestId: c33a0a51-828f-45b3-9006-2ee6c4d4a978 Version: $LATEST
 [memoria] postal 2026-08-22T10-43-26 guardada
 [s3] archivo republicado con 1 postales
 [agente] listo. 'Brisa suave en carnaval melancolico' desde Guaranda. archivo: 1 postales
-END RequestId: c33a0a51-828f-45b3-9006-2ee6c4d4a978
-REPORT RequestId: c33a0a51-828f-45b3-9006-2ee6c4d4a978
-Duration: 2673.47 ms
-Billed Duration: 3238 ms
-Memory Size: 512 MB
-Max Memory Used: 104 MB
-Init Duration: 564.48 ms
-START RequestId: ae6a89c3-93bc-40b2-88b5-b5210e375b56 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T10:43:55.436149-05:00
 [memoria] 1 postales previas en el historial
 [decision] lugar=Saraguro tono=nostalgico de algo que no se nombra
@@ -32,15 +30,6 @@ START RequestId: ae6a89c3-93bc-40b2-88b5-b5210e375b56 Version: $LATEST
 [memoria] postal 2026-08-22T10-43-55 guardada
 [s3] archivo republicado con 2 postales
 [agente] listo. 'Tejiendo recuerdos en la neblina' desde Saraguro. archivo: 2 postales
-END RequestId: ae6a89c3-93bc-40b2-88b5-b5210e375b56
-REPORT RequestId: ae6a89c3-93bc-40b2-88b5-b5210e375b56
-Duration: 3252.56 ms
-Billed Duration: 3253 ms
-Memory Size: 512 MB
-Max Memory Used: 104 MB
-INIT_START Runtime Version: python:3.12.mainlinev2.v27
-Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:fb4a5cbb4aeb1909cf946882192e0e708d8756b3a866c3ab89a3cfcfffeca7bc
-START RequestId: 826a89c3-d075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T10:44:57.221046-05:00
 [memoria] 2 postales previas en el historial
 [decision] lugar=Parque Nacional Cotopaxi tono=callado, como una nota dejada sobre la mesa
@@ -50,14 +39,6 @@ START RequestId: 826a89c3-d075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T10-44-57 guardada
 [s3] archivo republicado con 3 postales
 [agente] listo. 'Caballos en el silencio blanco' desde Parque Nacional Cotopaxi. archivo: 3 postales
-END RequestId: 826a89c3-d075-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c3-d075-4ced-ac86-23a7a00c4ed1
-Duration: 3170.31 ms
-Billed Duration: 3718 ms
-Memory Size: 512 MB
-Max Memory Used: 104 MB
-Init Duration: 547.68 ms
-START RequestId: 826a89c4-fc75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T10:49:30.298879-05:00
 [memoria] 3 postales previas en el historial
 [decision] lugar=Quito tono=sensorial y concreto, puro olor y textura
@@ -67,13 +48,6 @@ START RequestId: 826a89c4-fc75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T10-49-30 guardada
 [s3] archivo republicado con 4 postales
 [agente] listo. 'La piedra cuenta sus secretos' desde Quito. archivo: 4 postales
-END RequestId: 826a89c4-fc75-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c4-fc75-4ced-ac86-23a7a00c4ed1
-Duration: 2308.17 ms
-Billed Duration: 2309 ms
-Memory Size: 512 MB
-Max Memory Used: 104 MB
-START RequestId: 826a89c6-2875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T10:54:30.294446-05:00
 [memoria] 4 postales previas en el historial
 [decision] lugar=Mompiche tono=luminoso y agradecido
@@ -83,13 +57,6 @@ START RequestId: 826a89c6-2875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T10-54-30 guardada
 [s3] archivo republicado con 5 postales
 [agente] listo. 'La ola que no termina nunca' desde Mompiche. archivo: 5 postales
-END RequestId: 826a89c6-2875-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c6-2875-4ced-ac86-23a7a00c4ed1
-Duration: 2614.93 ms
-Billed Duration: 2615 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89c7-5475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T10:59:30.310129-05:00
 [memoria] 5 postales previas en el historial
 [decision] lugar=Isla Isabela tono=humoristico sin dejar de ser tierno
@@ -99,13 +66,6 @@ START RequestId: 826a89c7-5475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T10-59-30 guardada
 [s3] archivo republicado con 6 postales
 [agente] listo. 'La brisa juega con la llovizna' desde Isla Isabela. archivo: 6 postales
-END RequestId: 826a89c7-5475-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c7-5475-4ced-ac86-23a7a00c4ed1
-Duration: 2359.20 ms
-Billed Duration: 2360 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89c8-8075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:04:30.303626-05:00
 [memoria] 6 postales previas en el historial
 [decision] lugar=Macas tono=inquieto, con algo de presagio
@@ -115,13 +75,6 @@ START RequestId: 826a89c8-8075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-04-30 guardada
 [s3] archivo republicado con 7 postales
 [agente] listo. 'El volcán observa en silencio' desde Macas. archivo: 7 postales
-END RequestId: 826a89c8-8075-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c8-8075-4ced-ac86-23a7a00c4ed1
-Duration: 2559.57 ms
-Billed Duration: 2560 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89c9-ac75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:09:30.285959-05:00
 [memoria] 7 postales previas en el historial
 [decision] lugar=Salinas tono=reflexivo sobre el paso del tiempo
@@ -131,13 +84,6 @@ START RequestId: 826a89c9-ac75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-09-30 guardada
 [s3] archivo republicado con 8 postales
 [agente] listo. 'Sombras buscadas bajo lonas viejas' desde Salinas. archivo: 8 postales
-END RequestId: 826a89c9-ac75-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89c9-ac75-4ced-ac86-23a7a00c4ed1
-Duration: 3119.69 ms
-Billed Duration: 3120 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89ca-d875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:14:30.308813-05:00
 [memoria] 8 postales previas en el historial
 [decision] lugar=Manta tono=seco y observacional, casi periodistico
@@ -147,13 +93,6 @@ START RequestId: 826a89ca-d875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-14-30 guardada
 [s3] archivo republicado con 9 postales
 [agente] listo. 'Sombras buscadas bajo el viento' desde Manta. archivo: 9 postales
-END RequestId: 826a89ca-d875-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89ca-d875-4ced-ac86-23a7a00c4ed1
-Duration: 2932.77 ms
-Billed Duration: 2933 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89cc-0475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:19:30.298561-05:00
 [memoria] 9 postales previas en el historial
 [decision] lugar=Latacunga tono=sobrio y geologico, atento al tiempo largo
@@ -163,13 +102,6 @@ START RequestId: 826a89cc-0475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-19-30 guardada
 [s3] archivo republicado con 10 postales
 [agente] listo. 'La piedra gris en los puestos' desde Latacunga. archivo: 10 postales
-END RequestId: 826a89cc-0475-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89cc-0475-4ced-ac86-23a7a00c4ed1
-Duration: 2490.09 ms
-Billed Duration: 2491 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89cd-3075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:24:30.295251-05:00
 [memoria] 10 postales previas en el historial
 [decision] lugar=Puerto Baquerizo Moreno, San Cristobal tono=nostalgico de algo que no se nombra
@@ -179,13 +111,6 @@ START RequestId: 826a89cd-3075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-24-30 guardada
 [s3] archivo republicado con 11 postales
 [agente] listo. 'Sombra buscada en el malecón' desde Puerto Baquerizo Moreno, San Cristobal. archivo: 11 postales
-END RequestId: 826a89cd-3075-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89cd-3075-4ced-ac86-23a7a00c4ed1
-Duration: 3291.15 ms
-Billed Duration: 3292 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89ce-5c75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:29:30.305450-05:00
 [memoria] 11 postales previas en el historial
 [decision] lugar=Parque Nacional Yasuni tono=melancolico y contenido
@@ -195,13 +120,6 @@ START RequestId: 826a89ce-5c75-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-29-30 guardada
 [s3] archivo republicado con 12 postales
 [agente] listo. 'Sombra buscada en tierra mojada' desde Parque Nacional Yasuni. archivo: 12 postales
-END RequestId: 826a89ce-5c75-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89ce-5c75-4ced-ac86-23a7a00c4ed1
-Duration: 2372.73 ms
-Billed Duration: 2373 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89cf-8875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:34:30.341651-05:00
 [memoria] 12 postales previas en el historial
 [decision] lugar=Ingapirca tono=intimo, dirigido a una segunda persona
@@ -211,13 +129,6 @@ START RequestId: 826a89cf-8875-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-34-30 guardada
 [s3] archivo republicado con 13 postales
 [agente] listo. 'Templo del sol bajo nubes' desde Ingapirca. archivo: 13 postales
-END RequestId: 826a89cf-8875-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89cf-8875-4ced-ac86-23a7a00c4ed1
-Duration: 2463.81 ms
-Billed Duration: 2464 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89d0-b475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:39:30.449008-05:00
 [memoria] 13 postales previas en el historial
 [decision] lugar=Puerto Lopez tono=asombrado, como quien llega por primera vez
@@ -227,13 +138,6 @@ START RequestId: 826a89d0-b475-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-39-30 guardada
 [s3] archivo republicado con 14 postales
 [agente] listo. 'Sombras buscadas bajo el toldo' desde Puerto Lopez. archivo: 14 postales
-END RequestId: 826a89d0-b475-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89d0-b475-4ced-ac86-23a7a00c4ed1
-Duration: 2299.56 ms
-Billed Duration: 2300 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-START RequestId: 826a89d1-e075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T11:44:30.321419-05:00
 [memoria] 14 postales previas en el historial
 [decision] lugar=Laguna del Quilotoa tono=callado, como una nota dejada sobre la mesa
@@ -243,15 +147,6 @@ START RequestId: 826a89d1-e075-4ced-ac86-23a7a00c4ed1 Version: $LATEST
 [memoria] postal 2026-08-22T11-44-30 guardada
 [s3] archivo republicado con 15 postales
 [agente] listo. 'La quietud del agua turquesa' desde Laguna del Quilotoa. archivo: 15 postales
-END RequestId: 826a89d1-e075-4ced-ac86-23a7a00c4ed1
-REPORT RequestId: 826a89d1-e075-4ced-ac86-23a7a00c4ed1
-Duration: 2759.33 ms
-Billed Duration: 2760 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-INIT_START Runtime Version: python:3.12.mainlinev2.v27
-Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:fb4a5cbb4aeb1909cf946882192e0e708d8756b3a866c3ab89a3cfcfffeca7bc
-START RequestId: f64b4090-db31-4432-9127-f00cdb003400 Version: $LATEST
 [agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T11:50:41.730371-05:00
 [memoria] 14 postales previas en el historial
 [decision] lugar=Papallacta tono=callado, como una nota dejada sobre la mesa
@@ -261,21 +156,6 @@ START RequestId: f64b4090-db31-4432-9127-f00cdb003400 Version: $LATEST
 [memoria] postal 2026-08-22T11-50-41 guardada
 [s3] archivo republicado con 15 postales
 [agente] listo. 'Vapor contra el frio matinal' desde Papallacta. archivo: 15 postales
-END RequestId: f64b4090-db31-4432-9127-f00cdb003400
-REPORT RequestId: f64b4090-db31-4432-9127-f00cdb003400
-Duration: 2730.89 ms
-Billed Duration: 3279 ms
-Memory Size: 512 MB
-Max Memory Used: 104 MB
-Init Duration: 547.59 ms
-
-======================================================================
-Bloque 2 - tras migrar la infraestructura (log group recreado)
-Exportado: 2026-08-22T13:36:36-05:00
-======================================================================
-INIT_START Runtime Version: python:3.12.mainlinev2.v27
-Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:6bd9bb5ef92b1d497f0d321ae5cc98e2a8cdebca38437fb77b21c1fab1eb17cb
-START RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43 Version: $LATEST
 [agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T12:04:43.651293-05:00
 [memoria] 15 postales previas en el historial
 [decision] lugar=Vilcabamba tono=inquieto, con algo de presagio
@@ -285,24 +165,6 @@ START RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43 Version: $LATEST
 [memoria] postal 2026-08-22T12-04-43 guardada
 [s3] archivo republicado con 16 postales
 [agente] listo. 'Sombras buscadas en la quietud' desde Vilcabamba. archivo: 16 postales
-END RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43
-REPORT RequestId: a9faaeea-b80b-4a96-9809-15564e2c2f43
-Duration: 2906.26 ms
-Billed Duration: 3462 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-Init Duration: 554.74 ms
-XRAY TraceId: 1-6a89d6aa-60bad44e6abbd3b569bf4383
-SegmentId: ca8818456d5087a7
-Sampled: true
-
-======================================================================
-Bloque 3 - infraestructura en bash
-Exportado: 2026-08-22T13:49:15-05:00
-======================================================================
-INIT_START Runtime Version: python:3.12.mainlinev2.v27
-Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:6bd9bb5ef92b1d497f0d321ae5cc98e2a8cdebca38437fb77b21c1fab1eb17cb
-START RequestId: 7b049281-a233-4d59-9f90-530a6268011a Version: $LATEST
 [agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T13:44:01.437217-05:00
 [memoria] 16 postales previas en el historial
 [decision] lugar=Salinas de Guaranda tono=sensorial y concreto, puro olor y textura
@@ -312,13 +174,61 @@ START RequestId: 7b049281-a233-4d59-9f90-530a6268011a Version: $LATEST
 [memoria] postal 2026-08-22T13-44-01 guardada
 [s3] archivo republicado con 17 postales
 [agente] listo. 'Chomba puesta, niebla en las calles' desde Salinas de Guaranda. archivo: 17 postales
-END RequestId: 7b049281-a233-4d59-9f90-530a6268011a
-REPORT RequestId: 7b049281-a233-4d59-9f90-530a6268011a
-Duration: 2800.41 ms
-Billed Duration: 3348 ms
-Memory Size: 512 MB
-Max Memory Used: 105 MB
-Init Duration: 547.30 ms
-XRAY TraceId: 1-6a89edf0-4517a9c000d6936d6d3b3582
-SegmentId: 90966d70b2abcc85
-Sampled: true
+
+--- BATCH 2 · later runs, English logs ---
+[agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T13:57:32.217473-05:00
+[memoria] 0 postales previas en el historial
+[decision] lugar=Isla Isabela tono=reflexivo sobre el paso del tiempo
+[clima] Isla Isabela: 25.8C, llovizna, humedad 81%, viento 16.1km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=609 tokens_out=168
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T13-57-32 guardada
+[s3] archivo republicado con 1 postales
+[agente] listo. 'La arena blanca se torna dorada' desde Isla Isabela. archivo: 1 postales
+[agente] despierta. disparador=invocacion-directa hora_ecuador=2026-08-22T13:58:41.035297-05:00
+[memoria] 18 postales previas en el historial
+[decision] lugar=Laguna de Cuicocha tono=humoristico sin dejar de ser tierno
+[clima] Laguna de Cuicocha: 18.2C, llovizna ligera, humedad 44%, viento 6.9km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=639 tokens_out=207
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T13-58-41 guardada
+[s3] archivo republicado con 19 postales
+[agente] listo. 'La llovizna nos pone cara seria' desde Laguna de Cuicocha. archivo: 19 postales
+[agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T14:38:17.648035-05:00
+[memoria] 19 postales previas en el historial
+[decision] lugar=Ibarra tono=sobrio y geologico, atento al tiempo largo
+[clima] Ibarra: 26.1C, cubierto, humedad 31%, viento 12.7km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=636 tokens_out=189
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T14-38-17 guardada
+[s3] archivo republicado con 20 postales
+[agente] listo. 'Sombras buscadas en paredes blancas' desde Ibarra. archivo: 20 postales
+[agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T15:03:33.625785-05:00
+[memoria] 20 postales previas en el historial
+[decision] lugar=Tena tono=nostalgico de algo que no se nombra
+[clima] Tena: 28.1C, cubierto, humedad 63%, viento 6.8km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=629 tokens_out=213
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T15-03-33 guardada
+[s3] archivo republicado con 21 postales
+[agente] listo. 'La tarde nos trae recuerdos' desde Tena. archivo: 21 postales
+[agente] despierta. disparador=eventbridge-scheduler hora_ecuador=2026-08-22T15:24:48.184972-05:00
+[memoria] 20 postales previas en el historial
+[decision] lugar=Saraguro tono=seco y observacional, casi periodistico
+[clima] Saraguro: 22.2C, parcialmente nublado, humedad 42%, viento 11.0km/h
+[bedrock] intento 1 modelo=amazon.nova-pro-v1:0 tokens_in=634 tokens_out=213
+[validacion] intento 1: postal aceptada
+[memoria] postal 2026-08-22T15-24-48 guardada
+[s3] archivo republicado con 22 postales
+[agente] listo. 'Tejidos negros contra el cielo nublado' desde Saraguro. archivo: 22 postales
+[agent] waking up. trigger=eventbridge-scheduler local_time=2026-08-22T15:29:33.052552-05:00
+[memory] 20 previous postcards in the history
+[decision] place=Mitad del Mundo tone=melancolico y contenido
+[weather] Mitad del Mundo: 16.4C, llovizna ligera, humidity 85%, wind 10.1km/h
+[bedrock] attempt 1 model=amazon.nova-pro-v1:0 tokens_in=643 tokens_out=254
+[validation] attempt 1 rejected: length 157
+[bedrock] attempt 2 model=amazon.nova-pro-v1:0 tokens_in=643 tokens_out=168
+[validation] attempt 2: postcard accepted
+[memory] postcard 2026-08-22T15-29-33 saved
+[s3] archive republished with 23 postcards
+[agent] done. 'Entre dos mundos, la quietud' from Mitad del Mundo. archive: 23 postcards
